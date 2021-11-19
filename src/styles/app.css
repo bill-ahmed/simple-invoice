@@ -10,3 +10,45 @@ body {
 
 .col { @apply flex flex-col }
 .row { @apply flex flex-row }
+
+/* Typography */
+h2 { @apply text-2xl font-semibold; }
+h3 { @apply text-lg mb-3 }
+label { @apply text-gray-400 }
+
+/** Buttons **/
+button {
+  @apply font-bold py-1 px-4 rounded;
+}
+
+.btn-info { @apply bg-blue-500 text-white; }
+.btn-success { @apply text-white bg-green-500 }
+.btn-danger { @apply text-white bg-red-500 }
+.btn-warn { @apply text-white bg-yellow-500 }
+
+
+/* Inputs */
+input { @apply h-9 }
+input, textarea { @apply p-2 border-solid border-2 rounded-md mb-4 }
+
+/*** CUSTOM SCROLLBAR ***/
+::-webkit-scrollbar {
+  width: 5px;   /** Target vertical scroll-bars */
+  height: 5px;  /** Target horizontal scroll-bars */
+}
+
+/* Corner of the track (will sometimes show a small white square) */
+::-webkit-scrollbar-corner  {
+  background-color: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgb(131, 131, 131);
+  border-radius: 15px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

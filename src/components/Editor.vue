@@ -1,5 +1,5 @@
 <template>
-  <div id="printMe" style="width: 8.5in" class=" editor-container shadow-xl my-4 mx-auto p-16 bg-white overflow-y-auto">
+  <div id="printMe" style="width: 8.5in" class="editor-container shadow-xl my-4 mx-auto p-16 bg-white overflow-y-auto">
     <!-- From address -->
     <div class="mb-10 whitespace-pre">
       <p>
@@ -66,9 +66,9 @@
             class="text-right" style="border-bottom: solid 1px #E5E5E5"
           > 
             <td class="py-3 pr-24 description text-left text-sm"> {{item.description}} </td>
-            <td class="py-3 pr-4 text-sm min-w-16"> ${{item.rate}} </td>
-            <td class="py-3 pr-4 text-sm min-w-16"> {{item.qty}} </td>
-            <td class="py-3 text-sm min-w-16"> ${{item.qty * item.rate}} </td>
+            <td class="py-3 pr-4 text-sm w-24"> ${{rate(item)}} </td>
+            <td class="py-3 pr-4 text-sm w-12"> {{item.qty}} </td>
+            <td class="py-3 text-sm w-24"> ${{item.qty * item.rate}} </td>
           </tr>
         </tbody>
       </table>
@@ -79,31 +79,31 @@
       <div class="flex flex-col">
         <div class="flex flex-row justify-between"> 
           <p> Subtotal </p> 
-          <p> {{amountDue}} </p>
+          <p> ${{amountDue}} </p>
         </div>
         
         <div class="flex flex-row justify-between">
           <p> Tax </p>
-          <p> {{meta.tax}} </p>
+          <p> ${{meta.tax}} </p>
         </div>
 
         <hr class="my-2"/>
 
         <div class="flex flex-row justify-between">
           <p>Total</p>
-          <p> {{totalWithTax}} </p>
+          <p> ${{totalWithTax}} </p>
         </div>
 
         <div class="flex flex-row justify-between">
           <p> Amount Paid </p>
-          <p> {{meta.amountPaid}} </p>
+          <p> ${{meta.amountPaid}} </p>
         </div>
 
         <hr class="my-4"/>
 
         <div class="flex flex-row justify-between w-72">
           <p class="blue-color font-semibold"> Amount Due ({{meta.currency}}) &nbsp; </p>
-          <p> {{finalTotal}} </p>
+          <p> ${{finalTotal}} </p>
         </div>
       </div>
     </div>
@@ -122,15 +122,22 @@ export default {
   data() {
     return { }
   },
+
+  methods: {
+    rate(t) { return (t.rate).toFixed(2) },
+    lineTotal(t) { return (t.qty * t.rate).toFixed(2) },
+  },
+
   computed: {
     amountDue() {
-      return this.data.body.items.reduce((p, c) => { return p + (c.rate * c.qty) }, 0)
+      return this.data.body.items.reduce((p, c) => { return p + (c.rate * c.qty) }, 0).toFixed(2)
     },
     totalWithTax() {
-      return this.amountDue * (1 + this.meta.tax);
+      return (this.amountDue * (1 + this.meta.tax)).toFixed(2);
     },
     finalTotal() {
-      return this.totalWithTax - this.meta.amountPaid;
+      let totalTax = this.amountDue * (1 + this.meta.tax);
+      return (totalTax - this.meta.amountPaid).toFixed(2);
     }
   }
 }
