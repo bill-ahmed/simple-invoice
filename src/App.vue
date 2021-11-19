@@ -1,9 +1,9 @@
 <template>
   <div class="col h-screen">
     <div class="row w-screen flex-grow overflow-x-auto">
-      <div class="shadow-md m-4 p-2 w-1/5 bg-white rounded-lg overflow-auto">
+      <div class="shadow-md m-4 p-6 w-1/5 bg-white rounded-lg overflow-auto">
         <div class="mb-4">
-          <h2> Editor </h2>
+          <h2> Invoice Template </h2>
         </div>
 
         <div>          
@@ -27,20 +27,38 @@
 
       <EditorVue class="rounded-md" :meta="invoiceMeta" :data="invoiceData"/>
 
-      <div class="col w-1/6 overflow-auto">
+      <div class="col w-1/5 overflow-auto">
         <!-- Controls -->
-        <div class="m-4 mb-2 p-2 shadow-md bg-white rounded-md">
+        <div class="m-4 mb-2 p-6 shadow-md bg-white rounded-md">
           <div>
-            <input type="file" :key="filePickerKey" id="file_picker" class="hidden"/>
+            <input type="file" :key="filePickerKey" id="file_picker" class="hidden" accept=".csv"/>
             <div class="col">
-              <button class="my-2 btn-success" @click="save"> Save </button>
-              <button class="my-2 btn-info w-full" @click="print"> Print </button>
+              <button class="my-2 btn-success btn-icon" @click="save"> 
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                </svg>
+                
+                <span> Save Progress</span> 
+              </button>
+
+              <button class="my-2 btn-info btn-icon w-full" @click="print">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+
+                <span> Download PDF </span>
+              </button>
 
               <br/>
 
               <div class="row my-2">
-                <button class="mx-2 btn-warn btn-outlined w-full" @click="importData"> Import </button>
-                <button class="mx-2 btn-bare btn-outlined w-full" @click="exportData"> Export </button>
+                <button class="mx-2 btn-warn btn-outlined btn-icon w-full" @click="importData">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                  </svg>
+                  <span> Import File </span>
+                </button>
+                <!-- <button class="mx-2 btn-bare btn-outlined w-full" @click="exportData"> Export </button> -->
               </div>
 
               <!-- <button @click="debug">debug</button> -->
@@ -49,7 +67,7 @@
         </div>
 
         <!-- Meta data controls -->
-        <div class="m-4 mt-2 p-2 flex-grow shadow-md bg-white rounded-md">
+        <div class="m-4 mt-2 p-6 flex-grow shadow-md bg-white rounded-md">
           <div>
             <label>Invoice #</label>
             <input v-model="invoiceMeta.id" placeholder='e.g. 000003' class="w-full"/>
