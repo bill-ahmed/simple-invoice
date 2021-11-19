@@ -28,8 +28,28 @@
       <EditorVue class="rounded-md" :meta="invoiceMeta" :data="invoiceData"/>
 
       <div class="col w-1/6 overflow-auto">
+        <!-- Controls -->
+        <div class="m-4 mb-2 p-2 shadow-md bg-white rounded-md">
+          <div>
+            <input type="file" :key="filePickerKey" id="file_picker" class="hidden"/>
+            <div class="col">
+              <button class="my-2 btn-success" @click="save"> Save </button>
+              <button class="my-2 btn-info w-full" @click="print"> Print </button>
+
+              <br/>
+
+              <div class="row my-2">
+                <button class="mx-2 btn-warn btn-outlined w-full" @click="importData"> Import </button>
+                <button class="mx-2 btn-bare btn-outlined w-full" @click="exportData"> Export </button>
+              </div>
+
+              <!-- <button @click="debug">debug</button> -->
+            </div>
+          </div>
+        </div>
+
         <!-- Meta data controls -->
-        <div class="m-4 mb-2 p-2 flex-grow shadow-md bg-white rounded-md">
+        <div class="m-4 mt-2 p-2 flex-grow shadow-md bg-white rounded-md">
           <div>
             <label>Invoice #</label>
             <input v-model="invoiceMeta.id" placeholder='e.g. 000003' class="w-full"/>
@@ -58,29 +78,13 @@
           </div>
         </div>
 
-        <!-- Controls -->
-        <div class="m-4 mt-2 p-2 shadow-md bg-white rounded-md">
-          <div>
-            <input type="file" id="file_picker" class="hidden"/>
-            <div class="col">
-              <button class="my-2 btn-success" @click="save"> Save </button>
-              <button class="my-2 btn-info w-full" @click="print"> Print </button>
-
-              <br/>
-
-              <button class="my-2 btn-warn w-full" @click="importData"> Import </button>
-              <button class="my-2 btn-bare w-full" @click="exportData"> Export </button>
-
-              <button @click="debug">debug</button>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { useToast } from "vue-toastification";
 import EditorVue from './components/Editor.vue'
 import editorStyles from './styles/app.css.json';
 import { parseInvoiceCSV, sanitizeData } from './utils';
@@ -103,19 +107,24 @@ export default {
 
     return {
       invoiceMeta,
-      invoiceData
+      invoiceData,
+      filePickerKey: 0,  // Hacky way of clearing the input each time it's read
+      toast: useToast()
     }
   },
   methods: {
     debug() { this.invoiceData.body.items[0].description = 'test' },
     save() {
-      console.log('saving meta', this.invoiceMeta, this.invoiceMeta.dateIssue)
       localStorage.setItem('invoiceDataMeta', JSON.stringify(this.invoiceMeta))
       localStorage.setItem('invoiceData', JSON.stringify(this.invoiceData))
+
+      this.toast.success('Saved locally!')
     },
     importData() {
       let elem = document.getElementById('file_picker');
-      elem.addEventListener('change', () => {
+
+      elem.addEventListener('input', () => {
+        console.log('new file')
         let file = elem.files[0];
         let reader = new FileReader();
 
@@ -124,7 +133,12 @@ export default {
           let invoiceData = this.invoiceData;
           invoiceData.body.items = parsed;
 
-          this.invoiceData = sanitizeData(invoiceData)
+          this.invoiceData = sanitizeData(invoiceData);
+
+          // Clear value each time so we get updated file
+          this.filePickerKey++;
+
+          this.toast.info('Updated invoice.')
         }
 
         reader.readAsText(file);
