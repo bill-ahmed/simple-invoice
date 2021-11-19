@@ -47,10 +47,10 @@
             <label>Description</label>
             <input v-model="invoiceMeta.headers.description" class="w-full"/>
 
-            <label>Rate</label>
+            <label>Price</label>
             <input v-model="invoiceMeta.headers.amount" class="w-full"/>
 
-            <label>Qty</label>
+            <label>Quantity</label>
             <input v-model="invoiceMeta.headers.qty" class="w-full"/>
 
             <label>Line Total</label>
@@ -69,7 +69,7 @@
               <br/>
 
               <button class="my-2 btn-warn w-full" @click="importData"> Import </button>
-              <button class="my-2 rounded-md border-2 border-gray-300 w-full" @click="exportData"> Export </button>
+              <button class="my-2 btn-bare w-full" @click="exportData"> Export </button>
 
               <button @click="debug">debug</button>
             </div>
@@ -153,6 +153,7 @@ export default {
               ${elem.innerHTML}
             </body>
             <style>
+              body { margin: 1.25rem; font-family: calibri }
               ${stylesToAdd}
             </style>
           </html>

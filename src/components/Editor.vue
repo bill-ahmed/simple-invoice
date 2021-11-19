@@ -1,7 +1,7 @@
 <template>
-  <div id="printMe" style="width: 8.5in" class="editor-container shadow-xl my-4 mx-auto p-16 bg-white overflow-y-auto">
+  <div id="printMe" style="width: 8.5in;" class="editor-container shadow-xl my-4 mx-auto p-16 bg-white overflow-y-auto">
     <!-- From address -->
-    <div class="mb-10 text-black font-medium whitespace-pre">
+    <div class="mb-10 text-black whitespace-pre">
       <p>
         {{ data.header.from.name }}
       </p>
@@ -11,7 +11,7 @@
     </div>
 
     <!-- To address + Summary -->
-    <div class="text-black font-medium flex flex-row justify-between">
+    <div class="text-black flex flex-row justify-between">
       <div class="whitespace-pre">
         <p>
         {{ data.header.to.name }}
@@ -22,27 +22,27 @@
       </div>
 
       <!-- Invoice summary -->
-      <div class="flex flex-col blue-color font-semibold">
+      <div class="flex flex-col blue-color">
         <div class="flex flex-row justify-between">
           <p> Invoice Number </p>
-          <p> {{meta.id}} </p>
+          <p class="text-black"> {{meta.id}} </p>
         </div>
 
         <div class="flex flex-row justify-between">
           <p> Date of Issue </p>
-          <p> {{formatDate(meta.dateIssue)}} </p>
+          <p class="text-black"> {{formatDate(meta.dateIssue)}} </p>
         </div>
 
         <div class="flex flex-row justify-between">
           <p> Due Date </p>
-          <p> {{formatDate(meta.dateDue)}} </p>
+          <p class="text-black"> {{formatDate(meta.dateDue)}} </p>
         </div>
 
         <hr class="mt-2 mb-1 border-b-2 blue-color"/>
 
         <div class="flex flex-row justify-between items-baseline">
           <p> Amount Due ({{meta.currency}}) &nbsp; </p>
-          <p class="ml-10 text-2xl text-black"> ${{amountDue}} </p>
+          <p class="ml-10 text-2xl text-black font-medium"> ${{amountDue}} </p>
         </div>
       </div>
     </div>
@@ -54,8 +54,8 @@
       <table class="w-full">
         <thead class="text-right blue-color">
           <th class="text-left"> {{meta.headers.description}} </th>
-          <th class="pr-4"> {{meta.headers.amount}} </th>
-          <th class="pr-4"> {{meta.headers.qty}} </th>
+          <th class="pr-12"> {{meta.headers.amount}} </th>
+          <th class="pr-2"> {{meta.headers.qty}} </th>
           <th> {{meta.headers.lineTotal}} </th>
         </thead>
         
@@ -68,8 +68,8 @@
             class="text-right border-b-2 border-gray-200" 
           > 
             <td class="py-3 pr-24 description text-left text-sm"> {{item.description}} </td>
-            <td class="py-3 pr-4 text-sm w-24"> ${{rate(item)}} </td>
-            <td class="py-3 pr-4 text-sm w-12"> {{qty(item)}} </td>
+            <td class="py-3 pr-12 text-sm w-24"> ${{rate(item)}} </td>
+            <td class="py-3 pr-2 text-sm w-12"> {{item.qty}} </td>
             <td class="py-3 text-sm w-24"> ${{lineTotal(item)}} </td>
           </tr>
         </tbody>
@@ -79,32 +79,33 @@
     <!-- Subtotals -->
     <div class="flex flex-row justify-end mb-12">
       <div class="flex flex-col">
-        <div class="flex flex-row justify-between"> 
-          <p> Subtotal </p> 
+        <div class="w-96 pl-24 text-right flex flex-row justify-between"> 
+          <p class="w-24"> Subtotal </p> 
           <p> ${{amountDue}} </p>
         </div>
         
-        <div class="flex flex-row justify-between">
-          <p> Tax </p>
+        <div class="w-96 pl-24 text-right flex flex-row justify-between">
+          <p class="w-24"> Tax </p>
           <p> ${{tax}} </p>
         </div>
 
         <hr class="my-2"/>
 
-        <div class="flex flex-row justify-between">
-          <p>Total</p>
+        <div class="w-96 pl-24 text-right flex flex-row justify-between">
+          <p class="w-24">Total</p>
           <p> ${{totalWithTax}} </p>
         </div>
 
-        <div class="flex flex-row justify-between">
-          <p> Amount Paid </p>
+        <div class="w-96 pl-24 text-right flex flex-row justify-between">
+          <p class="w-24"> Amount Paid </p>
           <p> ${{amountPaid}} </p>
         </div>
 
-        <hr class="my-4"/>
+        <hr class="my-4 mb-1"/>
+        <hr class="mb-4" />
 
-        <div class="flex flex-row justify-between w-72">
-          <p class="blue-color font-semibold"> Amount Due ({{meta.currency}}) &nbsp; </p>
+        <div class="w-96 pl-22 flex flex-row justify-between">
+          <p class="pl-14 blue-color font-semibold"> Amount Due ({{meta.currency}}) &nbsp; </p>
           <p> ${{finalTotal}} </p>
         </div>
       </div>
@@ -127,7 +128,6 @@ export default {
 
   methods: {
     rate(t) { return (t.rate).toFixed(2) },
-    qty(t) { return t.qty.toFixed(1) },
     lineTotal(t) { return (t.qty * t.rate).toFixed(2) },
     formatDate(d) {
       let segments = d.split('-');
