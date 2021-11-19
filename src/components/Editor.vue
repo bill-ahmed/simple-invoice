@@ -1,7 +1,7 @@
 <template>
   <div id="printMe" style="width: 8.5in" class="editor-container shadow-xl my-4 mx-auto p-16 bg-white overflow-y-auto">
     <!-- From address -->
-    <div class="mb-10 whitespace-pre">
+    <div class="mb-10 text-black font-medium whitespace-pre">
       <p>
         {{ data.header.from.name }}
       </p>
@@ -11,7 +11,7 @@
     </div>
 
     <!-- To address + Summary -->
-    <div class="flex flex-row justify-between">
+    <div class="text-black font-medium flex flex-row justify-between">
       <div class="whitespace-pre">
         <p>
         {{ data.header.to.name }}
@@ -30,17 +30,19 @@
 
         <div class="flex flex-row justify-between">
           <p> Date of Issue </p>
-          <p> {{meta.dateOfIssue}} </p>
+          <p> {{formatDate(meta.dateIssue)}} </p>
         </div>
 
         <div class="flex flex-row justify-between">
           <p> Due Date </p>
-          <p> {{meta.dueDate}} </p>
+          <p> {{formatDate(meta.dateDue)}} </p>
         </div>
 
-        <div class="flex flex-row justify-between">
+        <hr class="mt-2 mb-1 border-b-2 blue-color"/>
+
+        <div class="flex flex-row justify-between items-baseline">
           <p> Amount Due ({{meta.currency}}) &nbsp; </p>
-          <p> ${{amountDue}} </p>
+          <p class="ml-10 text-2xl text-black"> ${{amountDue}} </p>
         </div>
       </div>
     </div>
@@ -51,10 +53,10 @@
     <div class="mb-12">
       <table class="w-full">
         <thead class="text-right blue-color">
-          <th class="text-left"> Description </th>
-          <th class="pr-4"> Rate </th>
-          <th class="pr-4"> Qty </th>
-          <th> Line Total </th>
+          <th class="text-left"> {{meta.headers.description}} </th>
+          <th class="pr-4"> {{meta.headers.amount}} </th>
+          <th class="pr-4"> {{meta.headers.qty}} </th>
+          <th> {{meta.headers.lineTotal}} </th>
         </thead>
         
         <div class="mb-1"/>
@@ -63,7 +65,7 @@
           <tr 
             v-for="(item, index) in data.body.items" 
             :key="index"
-            class="text-right" style="border-bottom: solid 1px #E5E5E5"
+            class="text-right border-b-2 border-gray-200" 
           > 
             <td class="py-3 pr-24 description text-left text-sm"> {{item.description}} </td>
             <td class="py-3 pr-4 text-sm w-24"> ${{rate(item)}} </td>
@@ -127,6 +129,10 @@ export default {
     rate(t) { return (t.rate).toFixed(2) },
     qty(t) { return t.qty.toFixed(1) },
     lineTotal(t) { return (t.qty * t.rate).toFixed(2) },
+    formatDate(d) {
+      let segments = d.split('-');
+      return new Date(segments[0], segments[1], segments[2]).toLocaleDateString("en-US")
+    }
   },
 
   computed: {

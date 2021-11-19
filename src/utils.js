@@ -7,7 +7,6 @@ import Papa from 'papaparse'
 export function parseInvoiceCSV(data) {
   // Sanitize it first
   data = data.replace('\r', '').trim();
-  console.log('sanitized parser', data)
 
   let res =  []
   let parsed = Papa.parse(data, { delimiter: ',' });
