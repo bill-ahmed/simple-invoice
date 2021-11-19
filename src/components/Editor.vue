@@ -67,8 +67,8 @@
           > 
             <td class="py-3 pr-24 description text-left text-sm"> {{item.description}} </td>
             <td class="py-3 pr-4 text-sm w-24"> ${{rate(item)}} </td>
-            <td class="py-3 pr-4 text-sm w-12"> {{item.qty}} </td>
-            <td class="py-3 text-sm w-24"> ${{item.qty * item.rate}} </td>
+            <td class="py-3 pr-4 text-sm w-12"> {{qty(item)}} </td>
+            <td class="py-3 text-sm w-24"> ${{lineTotal(item)}} </td>
           </tr>
         </tbody>
       </table>
@@ -84,7 +84,7 @@
         
         <div class="flex flex-row justify-between">
           <p> Tax </p>
-          <p> ${{meta.tax}} </p>
+          <p> ${{tax}} </p>
         </div>
 
         <hr class="my-2"/>
@@ -96,7 +96,7 @@
 
         <div class="flex flex-row justify-between">
           <p> Amount Paid </p>
-          <p> ${{meta.amountPaid}} </p>
+          <p> ${{amountPaid}} </p>
         </div>
 
         <hr class="my-4"/>
@@ -111,7 +111,7 @@
     <!-- Notes -->
     <div>
       <label class="blue-color font-semibold">Notes</label>
-      <p> {{data.footer.notes}} </p>
+      <p class="whitespace-pre"> {{data.footer.notes}} </p>
     </div>
   </div>
 </template>
@@ -125,12 +125,15 @@ export default {
 
   methods: {
     rate(t) { return (t.rate).toFixed(2) },
+    qty(t) { return t.qty.toFixed(1) },
     lineTotal(t) { return (t.qty * t.rate).toFixed(2) },
   },
 
   computed: {
+    tax() { return this.meta.tax.toFixed(2) },
+    amountPaid() { return this.meta.amountPaid.toFixed(2) },
     amountDue() {
-      return this.data.body.items.reduce((p, c) => { return p + (c.rate * c.qty) }, 0).toFixed(2)
+      return this.data.body.items.reduce((p, c) => { return p + (c.rate * c.qty) }, 0.0).toFixed(2)
     },
     totalWithTax() {
       return (this.amountDue * (1 + this.meta.tax)).toFixed(2);

@@ -30,17 +30,20 @@
           <hr class="mt-2 mb-3"/>
           
           <label>From*</label>
-          <input v-model="invoiceData.header.from.name" placeholder='e.g. "John Doe"' class="w-full"/>
+          <input v-model="invoiceData.header.from.name" placeholder='e.g. "John Doe"' class="w-full" spellcheck="false"/>
 
           <label>From Address*</label>
-          <textarea v-model="invoiceData.header.from.address" rows="4" class="w-full"/>
+          <textarea v-model="invoiceData.header.from.address" rows="3" class="text-sm w-full" spellcheck="false"/>
 
 
           <label>To*</label>
-          <input v-model="invoiceData.header.to.name" placeholder='e.g. "John Doe"' class="w-full"/>
+          <input v-model="invoiceData.header.to.name" placeholder='e.g. "John Doe"' class="w-full" spellcheck="false"/>
 
           <label>To Address*</label>
-          <textarea v-model="invoiceData.header.to.address" rows="4" class="w-full"/>
+          <textarea v-model="invoiceData.header.to.address" rows="3" class="text-sm w-full" spellcheck="false"/>
+
+          <label>Notes</label>
+          <textarea v-model="invoiceData.footer.notes" rows="3" class="text-sm w-full"/>
         </div>
       </div>
       <EditorVue class="rounded-md" :meta="invoiceMeta" :data="invoiceData"/>

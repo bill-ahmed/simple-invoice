@@ -14,7 +14,7 @@ body {
 /* Typography */
 h2 { @apply text-2xl font-semibold; }
 h3 { @apply text-lg mb-3 }
-label { @apply text-gray-400 }
+label { @apply text-sm text-gray-400 }
 
 /** Buttons **/
 button {
@@ -29,7 +29,7 @@ button {
 
 /* Inputs */
 input { @apply h-9 }
-input, textarea { @apply p-2 border-solid border-2 rounded-md mb-4 }
+input, textarea { @apply p-2 border-solid border-2 rounded-md mb-3 }
 
 /*** CUSTOM SCROLLBAR ***/
 ::-webkit-scrollbar {
