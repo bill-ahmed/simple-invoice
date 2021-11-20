@@ -1,7 +1,7 @@
 <template>
   <div id="printMe" style="width: 8.5in;" class="editor-container shadow-xl my-4 mx-auto p-16 bg-white overflow-y-auto">
     <!-- From address -->
-    <div class="mb-10 text-black whitespace-pre-wrap">
+    <div class="mb-10 w-full text-black break-all whitespace-pre-wrap">
       <p>
         {{ data.header.from.name }}
       </p>
@@ -12,7 +12,7 @@
 
     <!-- To address + Summary -->
     <div class="text-black flex flex-row justify-between">
-      <div class="w-80 whitespace-pre-wrap">
+      <div class="w-80 break-all whitespace-pre-wrap">
         <p>
         {{ data.header.to.name }}
         </p>
@@ -67,7 +67,7 @@
             :key="index"
             class="text-right border-b-2 border-gray-200" 
           > 
-            <td class="py-3 pr-12 whitespace-pre-wrap description text-left text-sm"> {{item.description}} </td>
+            <td class="py-3 pr-12 break-all whitespace-pre-wrap description text-left text-sm"> {{item.description}} </td>
             <td class="py-3 pr-12 text-sm w-24"> ${{rate(item)}} </td>
             <td class="py-3 pr-2 text-sm w-12"> {{item.qty}} </td>
             <td class="py-3 text-sm w-24"> ${{lineTotal(item)}} </td>
@@ -114,7 +114,7 @@
     <!-- Notes -->
     <div>
       <label class="blue-color font-semibold">Notes</label>
-      <p class="whitespace-pre-wrap"> {{data.footer.notes}} </p>
+      <p class="w-full break-all whitespace-pre-wrap"> {{data.footer.notes}} </p>
     </div>
   </div>
 </template>
