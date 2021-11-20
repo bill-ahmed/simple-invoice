@@ -9,9 +9,9 @@ A basic invoice creator, with a default template resembling classic Freshbooks :
 - [X] Import CSV data to populate entries
 - [X] Export to PDF
 - [X] Progress saved locally
-- [] Customize currency
-- [] Assign tax and amount paid 
-- [] Edit invoice entries directly
+- [ ] Customize currency
+- [ ] Assign tax and amount paid 
+- [ ] Edit invoice entries directly
 ## Development
 ```
 npm install
