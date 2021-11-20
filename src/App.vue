@@ -1,9 +1,19 @@
 <template>
   <div class="col h-screen">
+    <HelpModalVue v-if="showHelp" v-on:close="showHelp = false"/>
+
     <div class="row w-screen flex-grow overflow-x-auto">
-      <div class="shadow-md m-4 p-6 w-1/5 bg-white rounded-lg overflow-auto">
-        <div class="mb-4">
+      <div class="flex flex-col shadow-md m-4 p-6 w-1/5 bg-white rounded-lg overflow-auto">
+        <div class="mb-4 row justify-between">
           <h2> Invoice Template </h2>
+
+          <button @click="showHelp = true" class="hover:bg-gray-200 ring-1 ring-gray-200 btn-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+
+            <span> Help </span>
+          </button>
         </div>
 
         <div>          
@@ -107,11 +117,13 @@ import EditorVue from './components/Editor.vue'
 import editorStyles from './styles/app.css.json';
 import { parseInvoiceCSV, sanitizeData } from './utils';
 import { INVOICE_METADATA_DEFAULTS, INVOICE_DATA_DEFAULTS } from './constants';
+import HelpModalVue from './components/HelpModal.vue';
 
 export default {
   name: 'App',
   components: {
-    EditorVue
+    EditorVue,
+    HelpModalVue
   },
   data() {
     let invoiceData = INVOICE_DATA_DEFAULTS;
@@ -124,6 +136,7 @@ export default {
     if(existingMeta) invoiceMeta = { ...invoiceMeta, ...(JSON.parse(existingMeta)) }
 
     return {
+      showHelp: false,
       invoiceMeta,
       invoiceData,
       filePickerKey: 0,  // Hacky way of clearing the input each time it's read
