@@ -101,7 +101,7 @@
           <p> ${{amountPaid}} </p>
         </div>
 
-        <hr class="my-4 mb-1"/>
+        <hr class="my-4 mb-0.5"/>
         <hr class="mb-4" />
 
         <div class="w-96 pl-22 flex flex-row justify-between">
