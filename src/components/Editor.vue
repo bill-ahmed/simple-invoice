@@ -131,7 +131,7 @@ export default {
     lineTotal(t) { return (t.qty * t.rate).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") },
     formatDate(d) {
       let segments = d.split('-');
-      return new Date(segments[0], segments[1] - 1, segments[2]).toLocaleDateString("en-US")
+      return new Date(segments[0], segments[1] - 1, segments[2]).toLocaleDateString("en-US", { day: '2-digit', month: '2-digit', year: 'numeric' })
     }
   },
 
