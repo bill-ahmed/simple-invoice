@@ -127,8 +127,8 @@ export default {
   },
 
   methods: {
-    rate(t) { return (t.rate).toFixed(2) },
-    lineTotal(t) { return (t.qty * t.rate).toFixed(2) },
+    rate(t) { return (t.rate).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") },
+    lineTotal(t) { return (t.qty * t.rate).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") },
     formatDate(d) {
       let segments = d.split('-');
       return new Date(segments[0], segments[1] - 1, segments[2]).toLocaleDateString("en-US")
@@ -136,17 +136,20 @@ export default {
   },
 
   computed: {
-    tax() { return this.meta.tax.toFixed(2) },
+    tax() { return this.meta.tax.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") },
     amountPaid() { return this.meta.amountPaid.toFixed(2) },
+    amountDueNum() {
+      return this.data.body.items.reduce((p, c) => { return p + (c.rate * c.qty) }, 0.0)
+    },
     amountDue() {
-      return this.data.body.items.reduce((p, c) => { return p + (c.rate * c.qty) }, 0.0).toFixed(2)
+      return this.amountDueNum.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
     totalWithTax() {
-      return (this.amountDue * (1 + this.meta.tax)).toFixed(2);
+      return (this.amountDueNum * (1 + this.meta.tax)).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
     finalTotal() {
-      let totalTax = this.amountDue * (1 + this.meta.tax);
-      return (totalTax - this.meta.amountPaid).toFixed(2);
+      let totalTax = this.amountDueNum * (1 + this.meta.tax);
+      return (totalTax - this.meta.amountPaid).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
   }
 }
