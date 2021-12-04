@@ -1,11 +1,14 @@
 <template>
-  <div id="printMe" style="width: 8.5in;" class="editor-container shadow-xl my-4 mx-auto p-16 bg-white overflow-y-auto">
+  <div @mouseover="showEdit=true" @mouseleave="showEdit = false" id="printMe" style="width: 8.5in;" class="editor-container shadow-xl my-4 mx-auto p-16 bg-white overflow-y-auto">    
     <!-- From address -->
-    <div class="mb-10 w-full text-black break-all whitespace-pre-wrap">
-      <p>
+    <div class="flex flex-col mb-10 w-full text-black break-all whitespace-pre-wrap">
+      <textarea v-if="showEdit" rows="1" placeholder="Your Name" v-model="data.header.from.name"/>
+      <p v-else>
         {{ data.header.from.name }}
       </p>
-      <p>
+
+      <textarea v-if="showEdit" rows="4" placeholder="Your Address" v-model="data.header.from.address"/>
+      <p v-else>
         {{ data.header.from.address }}
       </p>
     </div>
@@ -13,10 +16,13 @@
     <!-- To address + Summary -->
     <div class="text-black flex flex-row justify-between">
       <div class="w-80 break-all whitespace-pre-wrap">
-        <p>
+        <textarea class="w-full" v-if="showEdit" rows="1" placeholder="To Name" v-model="data.header.to.name"/>
+        <p v-else>
         {{ data.header.to.name }}
         </p>
-        <p>
+
+        <textarea class="w-full" v-if="showEdit" rows="4" placeholder="To Address" v-model="data.header.to.address"/>
+        <p v-else>
           {{ data.header.to.address }}
         </p>
       </div>
@@ -114,7 +120,9 @@
     <!-- Notes -->
     <div>
       <label class="blue-color font-semibold">Notes</label>
-      <p class="w-full break-all whitespace-pre-wrap"> {{data.footer.notes}} </p>
+
+      <textarea class="w-full" v-if="showEdit" rows="3" placeholder="(optional)" v-model="data.footer.notes"/>
+      <p v-else class="w-full break-all whitespace-pre-wrap"> {{data.footer.notes}} </p>
     </div>
   </div>
 </template>
@@ -123,7 +131,9 @@
 export default {
   props: ['meta', 'data'],
   data() {
-    return { }
+    return {
+      showEdit: false   // Whether to show editor view or not
+    }
   },
 
   methods: {
@@ -158,11 +168,18 @@ export default {
 <style>
 /* 
 * ANY AND ALL STYLES HERE MUST ALSO 
-* BE INCLUDED IN `app.css.json`
+* BE INCLUDED IN `app.css.json`, otherwise
+* they will only be rendered in the preview.
 *
 * Try to keep these at a minimum...
 */
 
 .blue-color { color: #4f697a; border-color: #4f697a; }
+
+#printMe textarea {
+  padding: 3px;
+  margin: 2px 0;
+  border: solid 1px rgba(0, 0, 0, 0.2);
+}
 
 </style>
