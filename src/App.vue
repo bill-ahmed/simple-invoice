@@ -16,22 +16,37 @@
           </button>
         </div>
 
-        <div>          
-          <label>From*</label>
-          <input v-model="invoiceData.header.from.name" placeholder='e.g. "John Doe"' class="w-full" spellcheck="false"/>
+        <!-- Meta data controls -->
+        <div>
+          <div>
+            <label>Invoice #</label>
+            <input v-model="invoiceMeta.id" placeholder='e.g. 000003' class="w-full"/>
 
-          <label>From Address*</label>
-          <textarea v-model="invoiceData.header.from.address" rows="5" class="text-sm w-full" spellcheck="false"/>
+            <label>Date Issued</label>
+            <input v-model="invoiceMeta.dateIssue" type="date" class="w-full"/>
 
+            <label>Due Date</label>
+            <input v-model="invoiceMeta.dateDue" type="date" class="w-full"/>
 
-          <label>To*</label>
-          <input v-model="invoiceData.header.to.name" placeholder='e.g. "John Doe"' class="w-full" spellcheck="false"/>
+            <h4 class="mt-4 font-medium"> Override Headers </h4>
 
-          <label>To Address*</label>
-          <textarea v-model="invoiceData.header.to.address" rows="5" class="text-sm w-full" spellcheck="false"/>
+            <label>Description</label>
+            <input v-model="invoiceMeta.headers.description" class="w-full"/>
 
-          <label>Notes</label>
-          <textarea v-model="invoiceData.footer.notes" rows="7" class="text-sm w-full"/>
+            <label>Price</label>
+            <input v-model="invoiceMeta.headers.amount" class="w-full"/>
+
+            <label>Quantity</label>
+            <input v-model="invoiceMeta.headers.qty" class="w-full"/>
+
+            <label>Line Total</label>
+            <input v-model="invoiceMeta.headers.lineTotal" class="w-full"/>
+
+            <div @click="invoiceMeta.showNotes = !invoiceMeta.showNotes" class="cursor-pointer w-full flex flex-row items-center justify-between">
+              <p class="mr-4"> Show additional notes </p>
+              <input class="m-0" type="checkbox" :checked="invoiceMeta.showNotes"/>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -76,35 +91,7 @@
           </div>
         </div>
 
-        <!-- Meta data controls -->
-        <div class="m-4 mt-2 p-6 flex-grow shadow-md bg-white rounded-md">
-          <div>
-            <label>Invoice #</label>
-            <input v-model="invoiceMeta.id" placeholder='e.g. 000003' class="w-full"/>
-
-            <label>Date Issued</label>
-            <input v-model="invoiceMeta.dateIssue" type="date" class="w-full"/>
-
-            <label>Due Date</label>
-            <input v-model="invoiceMeta.dateDue" type="date" class="w-full"/>
-
-            <hr class="mt-2 mb-3"/>
-
-            <h4 class="font-medium"> Override headers </h4>
-
-            <label>Description</label>
-            <input v-model="invoiceMeta.headers.description" class="w-full"/>
-
-            <label>Price</label>
-            <input v-model="invoiceMeta.headers.amount" class="w-full"/>
-
-            <label>Quantity</label>
-            <input v-model="invoiceMeta.headers.qty" class="w-full"/>
-
-            <label>Line Total</label>
-            <input v-model="invoiceMeta.headers.lineTotal" class="w-full"/>
-          </div>
-        </div>
+        
 
       </div>
     </div>

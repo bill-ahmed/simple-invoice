@@ -2,12 +2,12 @@
   <div @mouseover="showEdit=true" @mouseleave="showEdit = false" id="printMe" style="width: 8.5in;" class="editor-container shadow-xl my-4 mx-auto p-16 bg-white overflow-y-auto">    
     <!-- From address -->
     <div class="flex flex-col mb-10 w-full text-black break-all whitespace-pre-wrap">
-      <textarea v-if="showEdit" rows="1" placeholder="Your Name" v-model="data.header.from.name"/>
+      <textarea v-if="showEdit || data.header.from.name === ''" rows="1" placeholder="Your Name" v-model="data.header.from.name"/>
       <p v-else>
         {{ data.header.from.name }}
       </p>
 
-      <textarea v-if="showEdit" rows="4" placeholder="Your Address" v-model="data.header.from.address"/>
+      <textarea v-if="showEdit || data.header.from.address === ''" rows="4" placeholder="Your Address" v-model="data.header.from.address"/>
       <p v-else>
         {{ data.header.from.address }}
       </p>
@@ -16,12 +16,12 @@
     <!-- To address + Summary -->
     <div class="text-black flex flex-row justify-between">
       <div class="w-80 break-all whitespace-pre-wrap">
-        <textarea class="w-full" v-if="showEdit" rows="1" placeholder="To Name" v-model="data.header.to.name"/>
+        <textarea class="w-full" v-if="showEdit || data.header.to.name === ''" rows="1" placeholder="To Name" v-model="data.header.to.name"/>
         <p v-else>
         {{ data.header.to.name }}
         </p>
 
-        <textarea class="w-full" v-if="showEdit" rows="4" placeholder="To Address" v-model="data.header.to.address"/>
+        <textarea class="w-full" v-if="showEdit || data.header.to.address === ''" rows="4" placeholder="To Address" v-model="data.header.to.address"/>
         <p v-else>
           {{ data.header.to.address }}
         </p>
@@ -118,10 +118,10 @@
     </div>
 
     <!-- Notes -->
-    <div>
+    <div v-if="meta.showNotes">
       <label class="blue-color font-semibold">Notes</label>
 
-      <textarea class="w-full" v-if="showEdit" rows="3" placeholder="(optional)" v-model="data.footer.notes"/>
+      <textarea class="w-full" v-if="showEdit || data.footer.notes === ''" rows="3" placeholder="(optional)" v-model="data.footer.notes"/>
       <p v-else class="w-full break-all whitespace-pre-wrap"> {{data.footer.notes}} </p>
     </div>
   </div>

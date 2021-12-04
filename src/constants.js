@@ -5,6 +5,7 @@ export const INVOICE_METADATA_DEFAULTS = {
   amountPaid: 0,
   dateIssue: '',
   dateDue: '',
+  showNotes: false,
 
   // Override headers for the table
   headers: {
