@@ -74,7 +74,7 @@
             class="text-right border-b-2 border-gray-200" 
           > 
             <td class="py-3 pr-12 break-word whitespace-pre-wrap description text-left text-sm"> 
-            <textarea class="w-full" v-if="showEdit" rows="1" placeholder="To Name" v-model="item.description"/>
+            <textarea class="w-full" v-if="showEdit" rows="1" placeholder="Add a description..." v-model="item.description"/>
              <div v-else> {{item.description}} </div> 
             </td>
 
@@ -145,7 +145,7 @@ export default {
   props: ['meta', 'data'],
   data() {
     return {
-      showEdit: true   // Whether to show editor view or not
+      showEdit: false   // Whether to show editor view or not
     }
   },
 
