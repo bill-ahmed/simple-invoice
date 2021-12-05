@@ -73,9 +73,22 @@
             :key="index"
             class="text-right border-b-2 border-gray-200" 
           > 
-            <td class="py-3 pr-12 break-word whitespace-pre-wrap description text-left text-sm"> {{item.description}} </td>
-            <td class="py-3 pr-12 text-sm w-24"> ${{rate(item)}} </td>
-            <td class="py-3 pr-2 text-sm w-12"> {{item.qty}} </td>
+            <td class="py-3 pr-12 break-word whitespace-pre-wrap description text-left text-sm"> 
+            <textarea class="w-full" v-if="showEdit" rows="1" placeholder="To Name" v-model="item.description"/>
+             <div v-else> {{item.description}} </div> 
+            </td>
+
+            
+            <td class="py-3 pr-12 text-sm w-24"> 
+              <input class="w-14 h-7" v-if="showEdit" rows="1" type="number" v-model="item.rate"/>
+              
+              <div v-else> ${{rate(item)}} </div>
+            </td>
+            
+            <td class="py-3 pr-2 text-sm w-12"> 
+              <input class="w-12 h-7" v-if="showEdit" rows="1" type="number" v-model="item.qty"/>
+              <div v-else> {{item.qty}} </div>
+            </td>
             <td class="py-3 text-sm w-24"> ${{lineTotal(item)}} </td>
           </tr>
         </tbody>
@@ -132,7 +145,7 @@ export default {
   props: ['meta', 'data'],
   data() {
     return {
-      showEdit: false   // Whether to show editor view or not
+      showEdit: true   // Whether to show editor view or not
     }
   },
 
@@ -180,6 +193,14 @@ export default {
   padding: 3px;
   margin: 2px 0;
   border: solid 1px rgba(0, 0, 0, 0.2);
+}
+
+tbody textarea {
+  margin: 0;
+}
+
+tbody input {
+  padding: 0 5px;
 }
 
 </style>
