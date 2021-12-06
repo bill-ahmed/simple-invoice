@@ -68,29 +68,45 @@
         <div class="mb-1"/>
 
         <tbody>
-          <tr 
-            v-for="(item, index) in data.body.items" 
-            :key="index"
-            class="text-right border-b-2 border-gray-200" 
-          > 
-            <td class="py-3 pr-12 break-word whitespace-pre-wrap description text-left text-sm"> 
-            <textarea class="w-full" v-if="showEdit" rows="1" placeholder="Add a description..." v-model="item.description"/>
-             <div v-else> {{item.description}} </div> 
-            </td>
+          <!-- <draggable v-if="showEdit" v-model="data.body.items" tag="transition-group" item-key="id">
+            <template #item="{element}">
+                <div> {{element.description}} </div>
+            </template>
+          </draggable> -->
 
-            
-            <td class="py-3 pr-12 text-sm w-24"> 
-              <input class="w-14 h-7" v-if="showEdit" rows="1" type="number" v-model="item.rate"/>
-              
-              <div v-else> ${{rate(item)}} </div>
-            </td>
-            
-            <td class="py-3 pr-2 text-sm w-12"> 
-              <input class="w-12 h-7" v-if="showEdit" rows="1" type="number" v-model="item.qty"/>
-              <div v-else> {{item.qty}} </div>
-            </td>
-            <td class="py-3 text-sm w-24"> ${{lineTotal(item)}} </td>
-          </tr>
+          <draggable v-model="data.body.items" tag="transition-group" item-key="id">
+            <template #item="{element}">
+              <tr
+                class="text-right border-b-2 border-gray-200" 
+              >
+
+                <td class="relative py-3 pr-12 break-word whitespace-pre-wrap description text-left text-sm"> 
+                  <!-- The draggable handle -->
+                  <div v-if="showEdit" class="cursor-pointer absolute -left-6 top-5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+                    </svg>
+                  </div>
+
+                  <textarea class="w-full" v-if="showEdit" rows="1" placeholder="Add a description..." v-model="element.description"/>
+                  <div v-else> {{element.description}} </div> 
+                </td>
+
+                <td class="py-3 pr-12 text-sm w-24"> 
+                  <input class="w-14 h-7" v-if="showEdit" rows="1" type="number" v-model="element.rate"/>
+                  
+                  <div v-else> ${{rate(element)}} </div>
+                </td>
+                
+                <td class="py-3 pr-2 text-sm w-12"> 
+                  <input class="w-12 h-7" v-if="showEdit" rows="1" type="number" v-model="element.qty"/>
+                  <div v-else> {{element.qty}} </div>
+                </td>
+                <td class="py-3 text-sm w-24"> ${{lineTotal(element)}} </td>
+              </tr>
+            </template>
+
+          </draggable>
         </tbody>
       </table>
     </div>
@@ -141,11 +157,22 @@
 </template>
 
 <script>
+import draggable from 'vuedraggable'
+
 export default {
   props: ['meta', 'data'],
+  components: {
+    draggable
+  },
   data() {
+    console.log(this.data.body.items)
     return {
-      showEdit: false   // Whether to show editor view or not
+      showEdit: true,   // Whether to show editor view or not
+      list: [
+        { name: "John", id: 0 },
+        { name: "Joao", id: 1 },
+        { name: "Jean", id: 2 }
+      ],
     }
   },
 

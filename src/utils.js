@@ -9,10 +9,12 @@ export function parseInvoiceCSV(data) {
   data = data.replace('\r', '').trim();
 
   let res =  []
+  let rowId = 0;
   let parsed = Papa.parse(data, { delimiter: ',' });
 
   for(let row of parsed.data) {
     res.push({
+      id: rowId++,
       description: row[0].trim(),
       rate: row[1].trim(),
       qty: row[2].trim()
@@ -24,7 +26,16 @@ export function parseInvoiceCSV(data) {
 
 /** Turn array of invoice items into a csv string. */
 export function exportInvoiceCSV(data) {
-  return Papa.unparse(data, { header: false })
+  // Clone the original
+  // We want to ignore specific keys, such as the "id" field
+  let cloned = []
+  data.forEach(e => cloned.push({
+    description: e.description,
+    rate: e.rate,
+    qty: e.qty
+  }));
+
+  return Papa.unparse(cloned, { header: false })
 }
 
 export function sanitizeData(d) {
