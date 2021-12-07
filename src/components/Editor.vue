@@ -53,28 +53,31 @@
       </div>
     </div>
 
-    <hr class="my-2 mt-8 border-t-4 blue-color"/>
+    <!-- Divider between summary and table -->
+    <div class="relative">
+      <hr class="my-2 mt-8 border-t-4 blue-color"/>
+      <button v-if="showEdit" class="btn-success p-1 absolute -right-6 -top-4 rounded-full" @click="addRow"> 
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+      </button>
+    </div>
 
     <!-- Main body -->
     <div class="mb-12">
       <table class="w-full">
         <thead class="text-right blue-color">
-          <th v-if="showEdit" class="w-7 text-xs text-left"></th>
+          <th v-if="showEdit" class="w-7 text-xs text-left"/>
           <th class="text-left"> {{meta.headers.description}} </th>
           <th class="pr-12"> {{meta.headers.amount}} </th>
           <th class="pr-2"> {{meta.headers.qty}} </th>
           <th> {{meta.headers.lineTotal}} </th>
+          <th class="w-7" v-if="showEdit"/>
         </thead>
         
         <div class="mb-1"/>
 
         <tbody>
-          <!-- <draggable v-if="showEdit" v-model="data.body.items" tag="transition-group" item-key="id">
-            <template #item="{element}">
-                <div> {{element.description}} </div>
-            </template>
-          </draggable> -->
-
           <draggable 
               v-model="data.body.items" 
               
@@ -88,7 +91,7 @@
             >
             <template #item="{element}">
               <tr
-                class="text-right border-b-2 border-gray-200" 
+                class="text-right border-b-2 border-gray-200"
               >
 
                 <td v-if="showEdit">
@@ -116,6 +119,14 @@
                   <div v-else> {{element.qty}} </div>
                 </td>
                 <td class="py-3 text-sm w-24"> ${{lineTotal(element)}} </td>
+
+                <td v-if="showEdit">
+                  <div @click="deleteRow(element.id)" class="text-red-500 cursor-pointer ml-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </div>
+                </td>
               </tr>
             </template>
 
@@ -191,6 +202,19 @@ export default {
     formatDate(d) {
       let segments = d.split('-');
       return new Date(segments[0], segments[1] - 1, segments[2]).toLocaleDateString("en-US", { day: '2-digit', month: '2-digit', year: 'numeric' })
+    },
+    addRow() { 
+      let newId = Math.max(...(this.data.body.items.map(e => e.id))) + 1
+      this.data.body.items.unshift({
+        id: newId,
+        description: '',
+        qty: 0,
+        rate: 0
+      });
+    },
+    deleteRow(id) {
+      let itemIndex = this.data.body.items.findIndex(e => e.id === id);
+      this.data.body.items.splice( itemIndex, 1);
     }
   },
 
