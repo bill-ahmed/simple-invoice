@@ -56,7 +56,7 @@
     <!-- Divider between summary and table -->
     <div class="relative">
       <hr class="my-2 mt-8 border-t-4 blue-color"/>
-      <button v-if="showEdit" class="btn-success p-1 absolute -right-6 -top-4 rounded-full" @click="addRow"> 
+      <button v-if="showEdit" style="top: -14px;" class="bg-blue text-white p-1 absolute -right-6 rounded-full shadow-md" @click="addRow"> 
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
         </svg>
@@ -248,6 +248,7 @@ export default {
 */
 
 .blue-color { color: #4f697a; border-color: #4f697a; }
+.bg-blue { background: #4f697a; }
 
 #printMe textarea {
   padding: 3px;
