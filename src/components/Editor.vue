@@ -1,5 +1,5 @@
 <template>
-  <div @mouseover="showEdit=true" @mouseleave="showEdit = false" id="printMe" style="width: 8.5in;" class="editor-container shadow-xl my-4 mx-auto p-16 bg-white overflow-y-auto">    
+  <div @mouseover="showEdit=true" @mouseleave="showEdit = false" id="printMe" style="width: 8.5in;" :style="showEdit ? 'padding: 2rem;' : ''" class="shadow-xl my-4 mx-auto p-16 bg-white overflow-y-auto">    
     <!-- From address -->
     <div class="flex flex-col mb-10 w-full text-black break-all whitespace-pre-wrap">
       <textarea v-if="showEdit || data.header.from.name === ''" rows="1" placeholder="Your Name" v-model="data.header.from.name"/>
@@ -59,6 +59,7 @@
     <div class="mb-12">
       <table class="w-full">
         <thead class="text-right blue-color">
+          <th v-if="showEdit" class="w-7 text-xs text-left"></th>
           <th class="text-left"> {{meta.headers.description}} </th>
           <th class="pr-12"> {{meta.headers.amount}} </th>
           <th class="pr-2"> {{meta.headers.qty}} </th>
@@ -74,20 +75,32 @@
             </template>
           </draggable> -->
 
-          <draggable v-model="data.body.items" tag="transition-group" item-key="id">
+          <draggable 
+              v-model="data.body.items" 
+              
+              @start="drag = true"
+              @end="drag = false"
+
+              tag="transition-group"
+
+              item-key="id" 
+              ghost-class="drag-ghost"
+            >
             <template #item="{element}">
               <tr
                 class="text-right border-b-2 border-gray-200" 
               >
 
-                <td class="relative py-3 pr-12 break-word whitespace-pre-wrap description text-left text-sm"> 
+                <td v-if="showEdit">
                   <!-- The draggable handle -->
-                  <div v-if="showEdit" class="cursor-pointer absolute -left-6 top-5">
+                  <div v-if="showEdit" class="cursor-pointer mb-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
                     </svg>
                   </div>
+                </td>
 
+                <td class="relative py-3 pr-12 break-word whitespace-pre-wrap description text-left text-sm"> 
                   <textarea class="w-full" v-if="showEdit" rows="1" placeholder="Add a description..." v-model="element.description"/>
                   <div v-else> {{element.description}} </div> 
                 </td>
@@ -167,12 +180,8 @@ export default {
   data() {
     console.log(this.data.body.items)
     return {
-      showEdit: true,   // Whether to show editor view or not
-      list: [
-        { name: "John", id: 0 },
-        { name: "Joao", id: 1 },
-        { name: "Jean", id: 2 }
-      ],
+      showEdit: false,   // Whether to show editor view or not,
+      drag: false,       // True iff an item is being dragged
     }
   },
 
@@ -228,6 +237,12 @@ tbody textarea {
 
 tbody input {
   padding: 0 5px;
+  margin: 0
+}
+
+.drag-ghost {
+  @apply shadow-sm;
+  background: #f0f0f0;
 }
 
 </style>
