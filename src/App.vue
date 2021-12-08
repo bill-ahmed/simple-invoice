@@ -76,14 +76,19 @@
 
               <br/>
 
-              <div class="row my-2">
-                <button class="mx-2 btn-warn btn-outlined btn-icon w-full" @click="importData">
+              <div class="col my-2">
+                <button class="m-2 btn-warn btn-outlined btn-icon w-full" @click="importData">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
                   </svg>
                   <span> Import File </span>
                 </button>
-                <!-- <button class="mx-2 btn-bare btn-outlined w-full" @click="exportData"> Export </button> -->
+
+                <button class="m-2 btn-bare btn-outlined btn-icon w-full" @click="exportData">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />                   </svg>
+                  <span> Export Data </span>
+                </button>
               </div>
 
               <!-- <button @click="debug">debug</button> -->
@@ -102,7 +107,7 @@
 import { useToast } from "vue-toastification";
 import EditorVue from './components/Editor.vue'
 import editorStyles from './styles/app.css.json';
-import { parseInvoiceCSV, sanitizeData } from './utils';
+import { downloadFile, exportInvoiceCSV, parseInvoiceCSV, sanitizeData } from './utils';
 import { INVOICE_METADATA_DEFAULTS, INVOICE_DATA_DEFAULTS } from './constants';
 import HelpModalVue from './components/HelpModal.vue';
 
@@ -146,6 +151,9 @@ export default {
         let file = elem.files[0];
         let reader = new FileReader();
 
+        // Keep track of the file name the user used
+        this.invoiceMeta.filename = file.name
+
         reader.onload = () => {
           let parsed = parseInvoiceCSV(reader.result);
           let invoiceData = this.invoiceData;
@@ -164,7 +172,10 @@ export default {
 
       elem.click();
     },
-    exportData() { alert('To-do!') },
+    exportData() {
+      let data = exportInvoiceCSV(this.invoiceData.body.items);
+      downloadFile(this.invoiceMeta.filename, data);
+    },
     print() {
       // Element to print
       let elem = document.getElementById('printMe')

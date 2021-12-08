@@ -1,5 +1,5 @@
 <template>
-  <div @mouseover="showEdit=true" @mouseleave="showEdit = false" id="printMe" style="width: 8.5in;" class="editor-container shadow-xl my-4 mx-auto p-16 bg-white overflow-y-auto">    
+  <div @mouseover="showEdit=true" @mouseleave="showEdit = false" id="printMe" style="width: 8.5in;" :style="showEdit ? 'padding: 2rem;' : ''" class="shadow-xl my-4 mx-auto p-16 bg-white overflow-y-auto">    
     <!-- From address -->
     <div class="flex flex-col mb-10 w-full text-black break-all whitespace-pre-wrap">
       <textarea v-if="showEdit || data.header.from.name === ''" rows="1" placeholder="Your Name" v-model="data.header.from.name"/>
@@ -53,31 +53,85 @@
       </div>
     </div>
 
-    <hr class="my-2 mt-8 border-t-4 blue-color"/>
+    <!-- Divider between summary and table -->
+    <div class="relative">
+      <hr class="my-2 mt-8 border-t-4 blue-color"/>
+      <button v-if="showEdit" style="top: -16px;" class="btn-icon bg-blue text-white p-2 pr-3 absolute left-1/2 rounded-full shadow-md" @click="addRow"> 
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+        <span class="text-xs"> Add Row </span>
+      </button>
+    </div>
 
     <!-- Main body -->
     <div class="mb-12">
       <table class="w-full">
         <thead class="text-right blue-color">
+          <th v-if="showEdit" class="w-7 text-xs text-left"/>
           <th class="text-left"> {{meta.headers.description}} </th>
           <th class="pr-12"> {{meta.headers.amount}} </th>
           <th class="pr-2"> {{meta.headers.qty}} </th>
           <th> {{meta.headers.lineTotal}} </th>
+          <th class="w-7" v-if="showEdit"/>
         </thead>
         
         <div class="mb-1"/>
 
         <tbody>
-          <tr 
-            v-for="(item, index) in data.body.items" 
-            :key="index"
-            class="text-right border-b-2 border-gray-200" 
-          > 
-            <td class="py-3 pr-12 break-word whitespace-pre-wrap description text-left text-sm"> {{item.description}} </td>
-            <td class="py-3 pr-12 text-sm w-24"> ${{rate(item)}} </td>
-            <td class="py-3 pr-2 text-sm w-12"> {{item.qty}} </td>
-            <td class="py-3 text-sm w-24"> ${{lineTotal(item)}} </td>
-          </tr>
+          <draggable 
+              v-model="data.body.items" 
+              
+              @start="drag = true"
+              @end="drag = false"
+
+              tag="transition-group"
+
+              item-key="id" 
+              ghost-class="drag-ghost"
+            >
+            <template #item="{element}">
+              <tr
+                class="text-right border-b-2 border-gray-200"
+              >
+
+                <td v-if="showEdit">
+                  <!-- The draggable handle -->
+                  <div v-if="showEdit" class="cursor-pointer mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+                    </svg>
+                  </div>
+                </td>
+
+                <td class="relative py-3 pr-12 break-word whitespace-pre-wrap description text-left text-sm"> 
+                  <textarea class="w-full" v-if="showEdit" rows="1" placeholder="Add a description..." v-model="element.description"/>
+                  <div v-else> {{element.description}} </div> 
+                </td>
+
+                <td class="py-3 pr-12 text-sm w-24"> 
+                  <input class="w-14 h-7" v-if="showEdit" rows="1" type="number" v-model="element.rate"/>
+                  
+                  <div v-else> ${{rate(element)}} </div>
+                </td>
+                
+                <td class="py-3 pr-2 text-sm w-12"> 
+                  <input class="w-12 h-7" v-if="showEdit" rows="1" type="number" v-model="element.qty"/>
+                  <div v-else> {{element.qty}} </div>
+                </td>
+                <td class="py-3 text-sm w-24"> ${{lineTotal(element)}} </td>
+
+                <td v-if="showEdit">
+                  <div @click="deleteRow(element.id)" class="text-red-500 cursor-pointer ml-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </div>
+                </td>
+              </tr>
+            </template>
+
+          </draggable>
         </tbody>
       </table>
     </div>
@@ -128,11 +182,18 @@
 </template>
 
 <script>
+import draggable from 'vuedraggable'
+
 export default {
   props: ['meta', 'data'],
+  components: {
+    draggable
+  },
   data() {
+    console.log(this.data.body.items)
     return {
-      showEdit: false   // Whether to show editor view or not
+      showEdit: false,   // Whether to show editor view or not,
+      drag: false,       // True iff an item is being dragged
     }
   },
 
@@ -142,6 +203,19 @@ export default {
     formatDate(d) {
       let segments = d.split('-');
       return new Date(segments[0], segments[1] - 1, segments[2]).toLocaleDateString("en-US", { day: '2-digit', month: '2-digit', year: 'numeric' })
+    },
+    addRow() { 
+      let newId = Math.max(...(this.data.body.items.map(e => e.id))) + 1
+      this.data.body.items.unshift({
+        id: newId,
+        description: '',
+        qty: 0,
+        rate: 0
+      });
+    },
+    deleteRow(id) {
+      let itemIndex = this.data.body.items.findIndex(e => e.id === id);
+      this.data.body.items.splice( itemIndex, 1);
     }
   },
 
@@ -175,11 +249,26 @@ export default {
 */
 
 .blue-color { color: #4f697a; border-color: #4f697a; }
+.bg-blue { background: #4f697a; }
 
 #printMe textarea {
   padding: 3px;
   margin: 2px 0;
   border: solid 1px rgba(0, 0, 0, 0.2);
+}
+
+tbody textarea {
+  margin: 0;
+}
+
+tbody input {
+  padding: 0 5px;
+  margin: 0
+}
+
+.drag-ghost {
+  @apply shadow-sm;
+  background: #f0f0f0;
 }
 
 </style>

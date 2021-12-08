@@ -6,6 +6,7 @@ export const INVOICE_METADATA_DEFAULTS = {
   dateIssue: '',
   dateDue: '',
   showNotes: false,
+  filename: 'my-invoice.csv',
 
   // Override headers for the table
   headers: {
