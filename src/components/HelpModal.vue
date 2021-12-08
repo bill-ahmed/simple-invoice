@@ -7,7 +7,7 @@
 
       <h3> Importing data </h3>
       <p class="mb-4"> 
-        To populate the invoice, you can import data in a CSV format. The file must contain the description, rate and quantity.
+        To populate the invoice, you can either manually add rows or import data in a CSV format. The file must contain the description, rate and quantity.
         All other values are calculated dynamically.
       </p>
 
