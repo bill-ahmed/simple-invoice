@@ -16,6 +16,11 @@
           </button>
         </div>
 
+        <div>
+          <button @click="login"> login </button>
+          <button @click="logout"> logout </button>
+        </div>
+
         <!-- Meta data controls -->
         <div>
           <div>
@@ -50,7 +55,8 @@
         </div>
       </div>
 
-      <EditorVue class="rounded-md" :meta="invoiceMeta" :data="invoiceData"/>
+      <EditorVue v-if="!loading" class="rounded-md" :meta="invoiceMeta" :data="invoiceData"/>
+      <div v-else class="text-sm"> Loading... </div>
 
       <div class="col w-1/5 overflow-auto">
         <!-- Controls -->
@@ -108,7 +114,7 @@ import { useToast } from "vue-toastification";
 import EditorVue from './components/Editor.vue'
 import editorStyles from './styles/app.css.json';
 import { downloadFile, exportInvoiceCSV, parseInvoiceCSV, sanitizeData } from './utils';
-import { INVOICE_METADATA_DEFAULTS, INVOICE_DATA_DEFAULTS } from './constants';
+import { INVOICE_METADATA_DEFAULTS, INVOICE_DATA_DEFAULTS, AUTHENTICATION } from './constants';
 import HelpModalVue from './components/HelpModal.vue';
 
 export default {
@@ -128,7 +134,9 @@ export default {
     if(existingMeta) invoiceMeta = { ...invoiceMeta, ...(JSON.parse(existingMeta)) }
 
     return {
+      loading: false,
       showHelp: false,
+      errors: [],
       invoiceMeta,
       invoiceData,
       filePickerKey: 0,  // Hacky way of clearing the input each time it's read
@@ -137,6 +145,35 @@ export default {
   },
   methods: {
     debug() { this.invoiceData.body.items[0].description = 'test' },
+    async login() {
+      this.loading = true;
+      this.errors = [];
+
+      let loginResponse;
+
+      // See if we can silently login first!
+      try {
+        loginResponse = await this.$msal.ssoSilent(AUTHENTICATION.azure.scopes);
+        console.log('silent login!', loginResponse)
+      } catch (error) {
+        // Silent login failed, ask user now
+        try {
+          loginResponse = await this.$msal.loginPopup(AUTHENTICATION.azure.scopes); 
+          console.log('signed in after popup!', loginResponse)
+        } catch (error) {
+          console.error('failed to login', error)
+          this.errors.push(error);
+        }
+      }
+
+      this.loading = false;
+    },
+    async logout() {
+      await this.$msal.logoutRedirect({
+        postLogoutRedirectUri: window.location.href
+      })
+      console.log('logged out!')
+    },
     save() {
       localStorage.setItem('invoiceDataMeta', JSON.stringify(this.invoiceMeta))
       localStorage.setItem('invoiceData', JSON.stringify(this.invoiceData))
