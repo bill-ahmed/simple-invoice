@@ -1,7 +1,7 @@
 <template>
   <div class="col h-screen">
     <HelpModalVue v-if="showHelp" v-on:close="showHelp = false"/>
-    <OneDriveFilePickerVue v-if="$store.state.modals.oneDriveFileSelector" />
+    <OneDriveFilePickerVue v-if="$store.state.modals.oneDriveFileSelector" v-on:update="parseAndLoadData" />
 
     <div class="row w-screen flex-grow overflow-x-auto">
       <div class="flex flex-col shadow-md m-4 p-6 w-1/5 bg-white rounded-lg overflow-auto">
@@ -152,7 +152,7 @@ export default {
     this.$store.dispatch('checkAuth').then(() => { this.loading = false; });
   },
   methods: {
-    debug() {  },
+    debug(d) { console.log('debug:', d) },
     save() {
       localStorage.setItem('invoiceDataMeta', JSON.stringify(this.invoiceMeta))
       localStorage.setItem('invoiceData', JSON.stringify(this.invoiceData))
@@ -171,11 +171,7 @@ export default {
         this.invoiceMeta.filename = file.name
 
         reader.onload = () => {
-          let parsed = parseInvoiceCSV(reader.result);
-          let invoiceData = this.invoiceData;
-          invoiceData.body.items = parsed;
-
-          this.invoiceData = sanitizeData(invoiceData);
+          this.parseAndLoadData(reader.result);          
 
           // Clear value each time so we get updated file
           this.filePickerKey++;
@@ -187,6 +183,13 @@ export default {
       });
 
       elem.click();
+    },
+    parseAndLoadData(data) {
+      let parsed = parseInvoiceCSV(data);
+      let invoiceData = this.invoiceData;
+      invoiceData.body.items = parsed;
+
+      this.invoiceData = sanitizeData(invoiceData);
     },
     exportData() {
       let data = exportInvoiceCSV(this.invoiceData.body.items);

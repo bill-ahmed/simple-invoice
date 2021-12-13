@@ -12,13 +12,24 @@ export function parseInvoiceCSV(data) {
   let rowId = 0;
   let parsed = Papa.parse(data, { delimiter: ',' });
 
-  for(let row of parsed.data) {
-    res.push({
-      id: rowId++,
-      description: row[0].trim(),
-      rate: row[1].trim(),
-      qty: row[2].trim()
-    })
+  try {
+    for(let row of parsed.data) {
+      res.push({
+        id: rowId++,
+        description: row[0].trim(),
+        rate: row[1].trim(),
+        qty: row[2].trim()
+      })
+    } 
+  } catch (error) {
+    alert('There was an unknown error when trying to parse the file. Please make sure it is a valid CSV! Check console logs for details.')
+    console.error('Failed parsing CSV:')
+    console.error(error);
+
+    console.error('Data given:')
+    console.error(data)
+
+    return []
   }
 
   return res;
