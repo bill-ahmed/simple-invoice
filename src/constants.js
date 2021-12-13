@@ -1,7 +1,7 @@
 export const AUTHENTICATION = {
   azure: {
     client_id: process.env.VUE_APP_AZURE_CLIENT_ID,
-    scopes: ['User.Read', 'Files.Read.All', 'Files.ReadWrite.All']
+    scopes: ['profile', 'User.Read', 'Files.Read.All', 'Files.ReadWrite.All']
   }
 };
 

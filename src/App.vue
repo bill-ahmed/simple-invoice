@@ -51,14 +51,32 @@
       </div>
 
       <EditorVue v-if="!loading" class="rounded-md" :meta="invoiceMeta" :data="invoiceData"/>
-      <div v-else class="text-sm"> Loading... </div>
+      <div v-else class="flex flex-col items-center justify-center" style="width: 8.5in">
+        <h3> Getting ready... </h3>
+      </div>
 
       <!-- Right-side options -->
       <div class="col w-1/5 overflow-auto">
         <!-- Controls -->
-        <div class="m-4 mb-2 p-6 shadow-md bg-white rounded-md">
+        <div class="m-4 mt-16 mb-2 p-6 shadow-md bg-white rounded-md">
           <input type="file" :key="filePickerKey" id="file_picker" class="hidden" accept=".csv"/>
-          <div class="col">
+          <div class="col relative">
+            <!-- User's avatar and info -->
+            <div v-if="!loading">
+              <div class="flex flex-col items-center justify-center absolute p-1 w-16 h-16 rounded-full -top-16 left-0 right-0 ml-auto mr-auto" style="background: #FAFAFA">
+                <svg v-if="!$store.getters.isLoggedIn" xmlns="http://www.w3.org/2000/svg" class="p-2 shadow-md rounded-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+
+                <img v-else-if="$store.getters.isLoggedInOneDrive" :src="$store.state.userInfo.avatar" class="shadow-md rounded-full"/>
+              </div>
+
+              <div v-if="$store.getters.isLoggedIn" class="my-2 flex flex-col items-center">
+                <h3 class="m-0"> {{ $store.state.userInfo.name }} </h3>
+                <h4 class="text-gray-400"> {{ $store.state.userInfo.email }} </h4>
+              </div>
+            </div>
+
             <button class="my-2 btn-success btn-icon" @click="save"> 
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
@@ -95,17 +113,27 @@
         </div>
 
         <div class="m-4 mb-2 p-6 shadow-md bg-white rounded-md">
-          <button v-if="!$store.getters.isLoggedIn" class="my-2 btn-info btn-icon w-full" @click="loginOneDrive">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
+          <div v-if="loading">
+            Please wait...
+          </div>
 
-            <span> OneDrive </span>
-          </button>
+          <div v-else>
+            <button v-if="!$store.getters.isLoggedIn" class="my-2 btn-info btn-icon w-full" @click="loginOneDrive">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+              </svg>
 
-          <button v-if="$store.getters.isLoggedInOneDrive" @click="logoutOneDrive">
-            Logout OneDrive
-          </button>
+              <span> Connect OneDrive </span>
+            </button>
+
+            <button v-if="$store.getters.isLoggedInOneDrive" @click="logoutOneDrive">
+              Logout OneDrive
+            </button>
+
+            <button @click="debug">
+              profile info
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -151,7 +179,7 @@ export default {
     this.$store.dispatch('checkAuth').then(() => { this.loading = false; });
   },
   methods: {
-    debug() { this.invoiceData.body.items[0].description = 'test' },
+    debug() {  },
     async loginOneDrive() {
       this.loading = true;
       await this.$store.dispatch('loginOneDrive');
