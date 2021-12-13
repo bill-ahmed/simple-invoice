@@ -38,7 +38,12 @@ export default createStore({
     msal: new msal.PublicClientApplication(msalConfig),
 
     /** User info such as name, email, avatar, etc. */
-    userInfo: { }
+    userInfo: { },
+
+    /** Keep track of which modals are open. */
+    modals: {
+      oneDriveFileSelector: false
+    }
   },
   mutations: {
     authProvider(state, newProvider) { state.authProvider = newProvider; },
@@ -46,7 +51,8 @@ export default createStore({
     account(state, account) { state.account = account; },
     msal(state, m) { state.msal = m; },
     userInfo(state, u) { state.userInfo = u; },
-    msGraph(state, m) { state.msGraph = m; }
+    msGraph(state, m) { state.msGraph = m; },
+    modals(state, m) { let mo = state.modals; state.modals = { ...mo, ...m } }
   },
   getters: {
     /** True iff user logged in with ANY possible provider */
