@@ -16,11 +16,6 @@
           </button>
         </div>
 
-        <div>
-          <button @click="login"> login </button>
-          <button @click="logout"> logout </button>
-        </div>
-
         <!-- Meta data controls -->
         <div>
           <div>
@@ -58,52 +53,60 @@
       <EditorVue v-if="!loading" class="rounded-md" :meta="invoiceMeta" :data="invoiceData"/>
       <div v-else class="text-sm"> Loading... </div>
 
+      <!-- Right-side options -->
       <div class="col w-1/5 overflow-auto">
         <!-- Controls -->
         <div class="m-4 mb-2 p-6 shadow-md bg-white rounded-md">
-          <div>
-            <input type="file" :key="filePickerKey" id="file_picker" class="hidden" accept=".csv"/>
-            <div class="col">
-              <button class="my-2 btn-success btn-icon" @click="save"> 
+          <input type="file" :key="filePickerKey" id="file_picker" class="hidden" accept=".csv"/>
+          <div class="col">
+            <button class="my-2 btn-success btn-icon" @click="save"> 
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+              </svg>
+              
+              <span> Save Progress</span> 
+            </button>
+
+            <button class="my-2 btn-info btn-icon w-full" @click="print">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+
+              <span> Download PDF </span>
+            </button>
+
+            <br/>
+
+            <div class="col my-2">
+              <button class="m-2 btn-warn btn-outlined btn-icon w-full" @click="importData">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
                 </svg>
-                
-                <span> Save Progress</span> 
+                <span> Import File </span>
               </button>
 
-              <button class="my-2 btn-info btn-icon w-full" @click="print">
+              <button class="m-2 btn-bare btn-outlined btn-icon w-full" @click="exportData">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-
-                <span> Download PDF </span>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />                   </svg>
+                <span> Export Data </span>
               </button>
-
-              <br/>
-
-              <div class="col my-2">
-                <button class="m-2 btn-warn btn-outlined btn-icon w-full" @click="importData">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
-                  </svg>
-                  <span> Import File </span>
-                </button>
-
-                <button class="m-2 btn-bare btn-outlined btn-icon w-full" @click="exportData">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />                   </svg>
-                  <span> Export Data </span>
-                </button>
-              </div>
-
-              <!-- <button @click="debug">debug</button> -->
             </div>
           </div>
         </div>
 
-        
+        <div class="m-4 mb-2 p-6 shadow-md bg-white rounded-md">
+          <button v-if="!$store.getters.isLoggedIn" class="my-2 btn-info btn-icon w-full" @click="loginOneDrive">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
 
+            <span> OneDrive </span>
+          </button>
+
+          <button v-if="$store.getters.isLoggedInOneDrive" @click="logoutOneDrive">
+            Logout OneDrive
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -143,36 +146,20 @@ export default {
       toast: useToast()
     }
   },
+  mounted() {
+    this.loading = true;
+    this.$store.dispatch('checkAuth').then(() => { this.loading = false; });
+  },
   methods: {
     debug() { this.invoiceData.body.items[0].description = 'test' },
-    async login() {
+    async loginOneDrive() {
       this.loading = true;
-      this.errors = [];
-
-      let loginResponse;
-
-      // See if we can silently login first!
-      try {
-        loginResponse = await this.$msal.ssoSilent(AUTHENTICATION.azure.scopes);
-        console.log('silent login!', loginResponse)
-      } catch (error) {
-        // Silent login failed, ask user now
-        try {
-          loginResponse = await this.$msal.loginPopup(AUTHENTICATION.azure.scopes); 
-          console.log('signed in after popup!', loginResponse)
-        } catch (error) {
-          console.error('failed to login', error)
-          this.errors.push(error);
-        }
-      }
+      await this.$store.dispatch('loginOneDrive');
 
       this.loading = false;
     },
-    async logout() {
-      await this.$msal.logoutRedirect({
-        postLogoutRedirectUri: window.location.href
-      })
-      console.log('logged out!')
+    logoutOneDrive() {
+      this.$store.dispatch('logoutOneDrive');
     },
     save() {
       localStorage.setItem('invoiceDataMeta', JSON.stringify(this.invoiceMeta))
