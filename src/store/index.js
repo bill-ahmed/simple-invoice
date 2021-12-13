@@ -132,7 +132,10 @@ export default createStore({
           await updateState();
 
         } catch (error) {
-          console.error('failed to login', error)
+          localStorage.removeItem('hasPreviousLogin');
+
+          alert('Failed to login. Check console logs for details.')
+          console.error('Failed to login', error)
         }
       }
     },

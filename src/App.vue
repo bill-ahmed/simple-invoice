@@ -51,10 +51,7 @@
         </div>
       </div>
 
-      <EditorVue v-if="!loading" class="rounded-md" :meta="invoiceMeta" :data="invoiceData"/>
-      <div v-else class="flex flex-col items-center justify-center" style="width: 8.5in">
-        <h3> Getting ready... </h3>
-      </div>
+      <EditorVue class="rounded-md" :loading="loading" :meta="invoiceMeta" :data="invoiceData"/>
 
       <!-- Right-side options -->
       <div class="col w-1/5 overflow-auto">
@@ -76,7 +73,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
             </svg>
             
-            <span> Save Progress</span> 
+            <span> Save Locally</span> 
           </button>
 
           <button class="my-2 btn-info btn-icon w-full" @click="print">
@@ -138,7 +135,7 @@ export default {
     if(existingMeta) invoiceMeta = { ...invoiceMeta, ...(JSON.parse(existingMeta)) }
 
     return {
-      loading: false,
+      loading: true,
       showHelp: false,
       errors: [],
       invoiceMeta,
@@ -148,8 +145,12 @@ export default {
     }
   },
   mounted() {
-    this.loading = true;
-    this.$store.dispatch('checkAuth').then(() => { this.loading = false; });
+    // Don't bother checking every time if user isn't authenticated
+    if(localStorage.getItem('hasPreviousLogin'))
+      this.$store.dispatch('checkAuth').then(() => { this.loading = false; });
+
+    else
+      this.loading = false;
   },
   methods: {
     debug(d) { console.log('debug:', d) },

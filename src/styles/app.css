@@ -21,7 +21,7 @@ button {
   @apply font-bold py-1 px-4 rounded;
 }
 
-.btn-bare { @apply ring-2 ring-gray-300 }
+.btn-bare { @apply ring-0 }
 .btn-info { @apply bg-blue-500 text-white }
 .btn-success { @apply text-white bg-green-500 }
 .btn-danger { @apply text-white bg-red-500 }
@@ -29,7 +29,7 @@ button {
 
 .btn-outlined { @apply bg-transparent ring-2 }
 
-.btn-bare.btn-outlined { @apply ring-0 hover:bg-gray-500 hover:text-white }
+.btn-bare.btn-outlined { @apply ring-gray-300 hover:bg-gray-500 hover:text-white }
 .btn-warn.btn-outlined { @apply ring-yellow-500 text-yellow-500 border-none hover:bg-yellow-500 hover:text-white }
 .btn-success.btn-outlined { @apply ring-green-500 text-green-500 hover:bg-green-500 hover:text-white }
 

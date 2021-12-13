@@ -1,5 +1,13 @@
 <template>
-  <div @mouseover="showEdit=true" @mouseleave="showEdit = false" id="printMe" style="width: 8.5in;" :style="showEdit ? 'padding: 2rem;' : ''" class="shadow-xl my-4 mx-auto p-16 bg-white overflow-y-auto">    
+  <div @mouseover="!loading ? showEdit=true : false" @mouseleave="showEdit = false" id="printMe" style="width: 8.5in;" :style="showEdit ? 'padding: 2rem;' : ''" class="relative shadow-xl my-4 mx-auto p-16 bg-white overflow-y-auto">    
+    <!-- Loading message -->
+    <div v-if="loading" class="flex flex-col items-center justify-center pointer-events-none absolute top-0 bottom-0 left-0 right-0" style="background: rgba(0,0,0,0.1)">
+      <!-- <h2 class="italic" style="z-index: 100;"> Getting ready... </h2> -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="animate-spin h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      </svg>
+    </div>
+
     <!-- From address -->
     <div class="flex flex-col mb-10 w-full text-black break-all whitespace-pre-wrap">
       <textarea v-if="showEdit || data.header.from.name === ''" rows="1" placeholder="Your Name" v-model="data.header.from.name"/>
@@ -185,7 +193,7 @@
 import draggable from 'vuedraggable'
 
 export default {
-  props: ['meta', 'data'],
+  props: ['meta', 'data', 'loading'],
   components: {
     draggable
   },
