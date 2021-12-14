@@ -146,6 +146,7 @@ export default {
         let data = await OneDrive.downloadFile(this.fileChosen);
         
         this.$emit('update', data);
+        this.$store.dispatch('fileOpened', this.fileChosen);
         this.close();
       }
     },

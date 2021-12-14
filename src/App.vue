@@ -56,19 +56,19 @@
       <!-- Right-side options -->
       <div class="col w-1/5 overflow-auto">
         <!-- Controls -->
-        <div class="m-4 mt-16 mb-2 p-6 shadow-md bg-white rounded-md">
+        <div class="m-4 mt-16 mb-2 p-2 shadow-md bg-white rounded-md">
           <input type="file" :key="filePickerKey" id="file_picker" class="hidden" accept=".csv"/>
           <div class="col relative">
             <div v-if="loading">
               <h3> Please wait... </h3>
             </div>
 
-            <AvatarCardVue v-else />
+            <AvatarCardVue v-else v-on:sync="manualSync" />
           </div>
         </div>
 
         <div class="m-4 mb-2 p-6 shadow-md bg-white rounded-md">
-          <button class="my-2 btn-success btn-icon w-full" @click="save"> 
+          <button v-if="!$store.getters.isLoggedIn" class="my-2 btn-success btn-icon w-full" @click="save"> 
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
             </svg>
@@ -154,11 +154,23 @@ export default {
   },
   methods: {
     debug(d) { console.log('debug:', d) },
-    save() {
+    async manualSync() {
+      let res = await this.$store.dispatch('fileSync', this.exportData(true));
+      console.log('sync', res)
+
+      // If truthy, then result is newer data from server
+      if(res)
+        this.parseAndLoadData(res)
+
+      this.save(true)
+      this.toast.success('Synced with the cloud!')
+    },
+    save(skipNotification) {
       localStorage.setItem('invoiceDataMeta', JSON.stringify(this.invoiceMeta))
       localStorage.setItem('invoiceData', JSON.stringify(this.invoiceData))
 
-      this.toast.success('Saved locally!')
+      if(!skipNotification)
+        this.toast.success('Saved locally!')
     },
     importData() {
       let elem = document.getElementById('file_picker');
@@ -192,9 +204,13 @@ export default {
 
       this.invoiceData = sanitizeData(invoiceData);
     },
-    exportData() {
+    exportData(skipDownload) {
       let data = exportInvoiceCSV(this.invoiceData.body.items);
-      downloadFile(this.invoiceMeta.filename, data);
+
+      if(!skipDownload)
+        downloadFile(this.invoiceMeta.filename, data);
+      
+      return data;
     },
     print() {
       // Element to print

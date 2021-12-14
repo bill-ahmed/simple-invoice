@@ -102,13 +102,33 @@ export default class OneDrive {
 
   /** 
    * Get items in a folder given its id
-   * 
    * @param {String} id
    * */
   static async folderItemsById(id) {
     return (
       await OneDrive._msGraph.get('/drive/items/' + id + '/children' + OneDrive._oneDriveQueryOpts)
     ).data.value
+  }
+
+  /**
+   * Updates contents of existing file given its id.
+   * @param {String} id Unique ID of the file.
+   * @param {String} data The file contents to send.
+   */
+  static async updateFileById(id, data) {
+    return (
+      await OneDrive._msGraph.put('/drive/items/' + id + '/content', data)
+    ).data
+  }
+
+  /**
+   * Get latest metadata on file with given id from OneDrive.
+   * @param {String} id 
+   */
+  static async getFileById(id) {
+    return (
+      await OneDrive._msGraph.get('/drive/items/' + id + OneDrive._oneDriveQueryOpts)
+    ).data
   }
 
   /**

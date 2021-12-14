@@ -31,21 +31,35 @@
 
       <!-- Controls for OneDrive -->
       <div v-if="$store.getters.isLoggedInOneDrive" class="my-2 flex flex-col items-center">
-        <button @click="openOneDriveFilePicker" class="w-full btn-icon btn-outlined btn-bare"> 
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
-          </svg>
 
-          <span> Open File </span> 
-        </button>
+        <div v-if="$store.state.isFileChosen" @click="sync" class="mb-8 flex flex-col w-full">
+          <!-- Info about the file currently opened -->
+          <div class="mb-4 flex flex-col text-gray-400">
+            <p> <b>Name:</b> {{ fileMetaData().name }} </p>
+            <p> <b>Size:</b> {{ fileMetaData().size }} </p>
+            <p class="italic"> Last updated {{ new Date(fileMetaData().lastModifiedDateTime).toLocaleString() }} </p>
+          </div>
 
-        <button class="mt-4 btn-outlined btn-warn w-full btn-icon text-sm" v-if="$store.getters.isLoggedInOneDrive" @click="logoutOneDrive">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
+          <button class="btn-bare btn-outlined"> Sync Now </button>          
+        </div>
 
-          Logout
-        </button>
+        <div class="w-full flex flex-row justify-center items-center">
+          <button @click="openOneDriveFilePicker" class="mr-5 w-full btn-icon btn-outlined btn-bare"> 
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
+            </svg>
+
+            <span> Open </span> 
+          </button>
+
+          <button class="btn-outlined btn-warn w-full btn-icon text-sm" v-if="$store.getters.isLoggedInOneDrive" @click="logoutOneDrive">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+
+            Logout
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -59,6 +73,8 @@ export default {
     };
   },
   methods: {
+    sync() { this.$emit('sync') },
+    fileMetaData() { return JSON.parse(localStorage.getItem('fileChosen')) },
     async loginOneDrive() {
       this.loading = true;
       localStorage.setItem('hasPreviousLogin', 'true');
@@ -69,6 +85,8 @@ export default {
     },
     async logoutOneDrive() {
       this.loading = true;
+
+      localStorage.removeItem('fileChosen')
       localStorage.removeItem('hasPreviousLogin');
 
       if(confirm('Are you sure you want to log out?'))
@@ -79,7 +97,7 @@ export default {
     openOneDriveFilePicker() {
       this.$store.commit('modals', { oneDriveFileSelector: true })
     }
-  }
+  },
 }
 </script>
 
