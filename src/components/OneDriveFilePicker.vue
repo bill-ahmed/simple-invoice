@@ -52,30 +52,26 @@
 
 <script>
 import axios from 'axios'
+import OneDrive from '../utils/OneDrive'
 
 export default {
   data() {
     return {
       loading: true,
-      root: '/drive/items/',
       path: '',
 
       /** URL to where the file is */
       fileChosen: null,
       currentFolderId: null,
 
-      /** Which fields we want back */
-      queryOpts: '?select=id,name,description,parentReference,file,createdBy,lastModifiedBy,lastModifiedDateTime,size,folder,remoteItem,@microsoft.graph.downloadUrl',
-      
-      msGraph: this.$store.state.msGraph,
-
       items: [],
       parents: []
     }
   },
   mounted() {
+
     // Get initial file data loaded
-    this.msGraph.get('/drive/root/children' + this.queryOpts).then(({ data }) => {
+    OneDrive.rootFiles().then((data) => {
       this.items = data.value
       this.currentFolderId = this.items[0].parentReference.id
       
@@ -115,7 +111,7 @@ export default {
         })
       }
 
-      this.items = (await this.msGraph.get(this.root + id + '/children' + this.queryOpts)).data.value;
+      this.items = await OneDrive.folderItemsById(id)
 
       this.updatePath();
       this.loading = false
@@ -131,7 +127,7 @@ export default {
       this.loading = true
       this.fileChosen = null;
 
-      this.items = (await this.msGraph.get(this.root + this.currentFolderId + '/children' + this.queryOpts)).data.value;
+      this.items = await OneDrive.folderItemsById(this.currentFolderId);
 
       this.loading = false;
     },
@@ -139,9 +135,7 @@ export default {
       if(confirm(`Open "${this.fileChosen.name}"? All data will be overrided!`)) {
         this.loading = true;
 
-        let dlURL = this.fileChosen['@microsoft.graph.downloadUrl']
         let mimeType = this.fileChosen.file.mimeType;
-        console.log('opening', dlURL, mimeType)
 
         if(mimeType !== 'application/octet-stream') {
           alert('Must be a valid CSV file!');
@@ -149,11 +143,7 @@ export default {
           return;
         }
 
-        let data = (await axios.get(dlURL, {
-          headers: {
-            Accept: mimeType
-          }
-        })).data
+        let data = await OneDrive.downloadFile(this.fileChosen);
         
         this.$emit('update', data);
         this.close();
