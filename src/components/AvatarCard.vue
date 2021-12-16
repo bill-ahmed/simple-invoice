@@ -32,7 +32,7 @@
       <!-- Controls for OneDrive -->
       <div v-if="$store.getters.isLoggedInOneDrive" class="my-2 flex flex-col items-center">
 
-        <div v-if="$store.state.isFileChosen" @click="sync" class="mb-8 flex flex-col w-full">
+        <div v-if="$store.state.isFileChosen" class="mb-8 flex flex-col w-full">
           <!-- Info about the file currently opened -->
           <div class="mb-4 flex flex-col text-gray-400">
             <p> <b>Name:</b> {{ fileMetaData().name }} </p>
@@ -40,11 +40,22 @@
             <p class="italic"> Last updated {{ new Date(fileMetaData().lastModifiedDateTime).toLocaleString() }} </p>
           </div>
 
-          <button class="btn-bare btn-outlined"> Sync Now </button>          
+          <div class="flex flex-row w-full items-center">
+            <div 
+              @click="autoSyncInterval ? stopAutoSync() : startAutoSync()" 
+              class="cursor-pointer w-1/2 flex flex-row items-center justify-between ring-2 ring-gray-300 rounded-md p-2 h-8"
+              :class="{ 'bg-gray-200': !!autoSyncInterval }"
+            >
+              <p class="mr-4"> Auto Sync </p>
+              <input class="m-0" type="checkbox" :checked="!!autoSyncInterval"/>
+            </div>
+
+            <button @click="sync" class="btn-bare btn-outlined text-xs p-1 w-1/2 h-8 ml-4"> Sync Now </button>
+          </div>
         </div>
 
         <div class="w-full flex flex-row justify-center items-center">
-          <button @click="openOneDriveFilePicker" class="mr-5 w-full btn-icon btn-outlined btn-bare"> 
+          <button @click="openOneDriveFilePicker" class="mr-5 w-1/2 btn-icon btn-outlined btn-bare"> 
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
             </svg>
@@ -52,7 +63,7 @@
             <span> Open </span> 
           </button>
 
-          <button class="btn-outlined btn-warn w-full btn-icon text-sm" v-if="$store.getters.isLoggedInOneDrive" @click="logoutOneDrive">
+          <button class="btn-outlined btn-warn w-1/2 btn-icon" v-if="$store.getters.isLoggedInOneDrive" @click="logoutOneDrive">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
@@ -69,12 +80,37 @@
 export default {
   data() {
     return {
-      loading: false
+      loading: false,
+      autoSyncInterval: null,
     };
   },
+  mounted() {
+    // Start syncing if enabled, or unset
+    let syncEnabled = JSON.parse(localStorage.getItem('autosync')) === true
+    let syncUnset = JSON.parse(localStorage.getItem('autosync')) == null
+
+    if(syncEnabled || syncUnset)
+      this.startAutoSync();
+
+  },
   methods: {
-    sync() { this.$emit('sync') },
+    sync(skipNotification) { console.log(new Date(), 'Syncing now.'); this.$emit('sync', skipNotification ?? false) },
+    startAutoSync() {
+      console.log("Enable auto sync.")
+      localStorage.setItem('autosync', true)
+      this.autoSyncInterval = setInterval(() => { this.sync(true) }, 30000) 
+    },
+    stopAutoSync() {
+      console.log("Disable auto sync.")
+      localStorage.setItem('autosync', false)
+      
+      clearInterval(this.autoSyncInterval); 
+      
+      this.autoSyncInterval = null; 
+    },
+
     fileMetaData() { return JSON.parse(localStorage.getItem('fileChosen')) },
+
     async loginOneDrive() {
       this.loading = true;
       localStorage.setItem('hasPreviousLogin', 'true');
@@ -94,6 +130,7 @@ export default {
       
       this.loading = false;
     },
+
     openOneDriveFilePicker() {
       this.$store.commit('modals', { oneDriveFileSelector: true })
     }

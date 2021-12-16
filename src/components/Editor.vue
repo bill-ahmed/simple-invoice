@@ -198,7 +198,6 @@ export default {
     draggable
   },
   data() {
-    console.log(this.data.body.items)
     return {
       showEdit: false,   // Whether to show editor view or not,
       drag: false,       // True iff an item is being dragged

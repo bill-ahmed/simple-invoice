@@ -57,6 +57,9 @@ export default createStore({
      * Raises exception if error is encountered.
      */
     async fileSync({ state, dispatch }, data) {
+      if(!localStorage.getItem('fileChosen'))
+        return;
+
       let file = JSON.parse(localStorage.getItem('fileChosen'));
 
       switch (state.authProvider) {
@@ -64,8 +67,6 @@ export default createStore({
           // Check if new version exists
           let lastModified = new Date(file.lastModifiedDateTime);
           let latestVersion = await OneDrive.getFileById(file.id);
-
-          console.log('server newer?', new Date(latestVersion.lastModifiedDateTime) > lastModified, { local: file.lastModifiedDateTime, server: latestVersion.lastModifiedDateTime })
 
           // If server is newer, override local
           if(new Date(latestVersion.lastModifiedDateTime) > lastModified) {

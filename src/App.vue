@@ -94,7 +94,7 @@
               <span> Import File </span>
             </button>
 
-            <button class="m-2 btn-bare btn-outlined btn-icon w-full" @click="exportData">
+            <button class="m-2 btn-bare btn-outlined btn-icon w-full" @click="exportData(false)">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />                   </svg>
               <span> Export Data </span>
@@ -137,10 +137,14 @@ export default {
     return {
       loading: true,
       showHelp: false,
+      
       errors: [],
+      
       invoiceMeta,
       invoiceData,
+      
       filePickerKey: 0,  // Hacky way of clearing the input each time it's read
+
       toast: useToast()
     }
   },
@@ -154,17 +158,21 @@ export default {
   },
   methods: {
     debug(d) { console.log('debug:', d) },
-    async manualSync() {
+    
+    async manualSync(skipNotification) {
+      // Save locally first in case anything else breaks!
+      this.save(true)
+
       let res = await this.$store.dispatch('fileSync', this.exportData(true));
-      console.log('sync', res)
 
       // If truthy, then result is newer data from server
       if(res)
         this.parseAndLoadData(res)
 
-      this.save(true)
-      this.toast.success('Synced with the cloud!')
+      if(!skipNotification)
+        this.toast.success('Synced with the cloud!')
     },
+    
     save(skipNotification) {
       localStorage.setItem('invoiceDataMeta', JSON.stringify(this.invoiceMeta))
       localStorage.setItem('invoiceData', JSON.stringify(this.invoiceData))
@@ -172,6 +180,7 @@ export default {
       if(!skipNotification)
         this.toast.success('Saved locally!')
     },
+    
     importData() {
       let elem = document.getElementById('file_picker');
 
@@ -212,6 +221,7 @@ export default {
       
       return data;
     },
+
     print() {
       // Element to print
       let elem = document.getElementById('printMe')

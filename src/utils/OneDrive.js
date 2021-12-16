@@ -76,7 +76,6 @@ export default class OneDrive {
    * Raises error if failed.
    */
   static async loginPopup() {
-    console.log('msal', OneDrive._msal)
     return await OneDrive._sharedLogin('loginPopup');
   }
 
