@@ -1,5 +1,11 @@
 import Papa from 'papaparse'
 
+/**
+ * Clones a Javscript Object. Can be very
+ * expensive if the object is large.
+ */
+export function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
 /** 
  * Given CSV text data, return formatted 
  * invoice data.
@@ -56,6 +62,35 @@ export function sanitizeData(d) {
   })
 
   return d;
+}
+
+/**
+ * Validates invoice contents
+ * and metadata.
+ * 
+ * @returns True iff data is valid, array of missing fields otherwise.
+ */
+export function validateInvoiceData(meta, contents) {
+  let missing = [];
+  const empty = (e) => e.trim() === '';
+
+  // Check metadata fields
+  let { id, dateIssue, dateDue } = meta;
+
+  if(empty(id))         missing.push('Invoice ID');
+  if(empty(dateDue))    missing.push('Date Due');
+  if(empty(dateIssue))  missing.push('Date Issued');
+
+  // Check content fields
+  let { name, address } = contents.header.from;
+  if(empty(name))    missing.push('Your Name');
+  if(empty(address)) missing.push('Your Address');
+
+  ({ name, address } = contents.header.to);
+  if(empty(name))    missing.push('To Name');
+  if(empty(address)) missing.push('To Address');
+
+  return missing.length > 0 ? missing : true;
 }
 
 /** 

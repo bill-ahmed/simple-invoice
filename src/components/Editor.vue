@@ -10,12 +10,12 @@
 
     <!-- From address -->
     <div class="flex flex-col mb-10 w-full text-black break-all whitespace-pre-wrap">
-      <textarea v-if="showEdit || data.header.from.name === ''" rows="1" placeholder="Your Name" v-model="data.header.from.name"/>
+      <textarea v-if="showEdit || data.header.from.name === ''" rows="1" placeholder="Your Name (*)" v-model="data.header.from.name"/>
       <p v-else>
         {{ data.header.from.name }}
       </p>
 
-      <textarea v-if="showEdit || data.header.from.address === ''" rows="4" placeholder="Your Address" v-model="data.header.from.address"/>
+      <textarea v-if="showEdit || data.header.from.address === ''" rows="4" placeholder="Your Address (*)" v-model="data.header.from.address"/>
       <p v-else>
         {{ data.header.from.address }}
       </p>
@@ -24,12 +24,12 @@
     <!-- To address + Summary -->
     <div class="text-black flex flex-row justify-between">
       <div class="w-80 break-all whitespace-pre-wrap">
-        <textarea class="w-full" v-if="showEdit || data.header.to.name === ''" rows="1" placeholder="To Name" v-model="data.header.to.name"/>
+        <textarea class="w-full" v-if="showEdit || data.header.to.name === ''" rows="1" placeholder="To Name (*)" v-model="data.header.to.name"/>
         <p v-else>
         {{ data.header.to.name }}
         </p>
 
-        <textarea class="w-full" v-if="showEdit || data.header.to.address === ''" rows="4" placeholder="To Address" v-model="data.header.to.address"/>
+        <textarea class="w-full" v-if="showEdit || data.header.to.address === ''" rows="4" placeholder="To Address (*)" v-model="data.header.to.address"/>
         <p v-else>
           {{ data.header.to.address }}
         </p>

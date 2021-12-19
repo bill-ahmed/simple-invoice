@@ -20,13 +20,13 @@
         <!-- Meta data controls -->
         <div>
           <div>
-            <label>Invoice #</label>
+            <label>Invoice # (*)</label>
             <input v-model="invoiceMeta.id" placeholder='e.g. 000003' class="w-full"/>
 
-            <label>Date Issued</label>
+            <label>Date Issued (*)</label>
             <input v-model="invoiceMeta.dateIssue" type="date" class="w-full"/>
 
-            <label>Due Date</label>
+            <label>Due Date (*)</label>
             <input v-model="invoiceMeta.dateDue" type="date" class="w-full"/>
 
             <h4 class="mt-4 font-medium"> Override Headers </h4>
@@ -110,7 +110,7 @@
 import { useToast } from "vue-toastification";
 import EditorVue from './components/Editor.vue'
 import editorStyles from './styles/app.css.json';
-import { downloadFile, exportInvoiceCSV, parseInvoiceCSV, sanitizeData } from './utils';
+import { clone, downloadFile, exportInvoiceCSV, parseInvoiceCSV, sanitizeData, validateInvoiceData } from './utils';
 import { INVOICE_METADATA_DEFAULTS, INVOICE_DATA_DEFAULTS, AUTHENTICATION } from './constants';
 import HelpModalVue from './components/HelpModal.vue';
 import AvatarCardVue from './components/AvatarCard.vue';
@@ -223,6 +223,13 @@ export default {
     },
 
     print() {
+      // Make sure everything is there
+      let validationResult = validateInvoiceData(clone(this.invoiceMeta), clone(this.invoiceData))
+      if(validationResult !== true) {
+        alert(`The following missing fields (*) are required:\n\n${validationResult.join(', ')}`)
+        return;
+      }
+
       // Element to print
       let elem = document.getElementById('printMe')
 
