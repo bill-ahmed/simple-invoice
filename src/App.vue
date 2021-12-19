@@ -68,7 +68,7 @@
         </div>
 
         <div class="m-4 mb-2 p-6 shadow-md bg-white rounded-md">
-          <button v-if="!$store.getters.isLoggedIn" class="my-2 btn-success btn-icon w-full" @click="save"> 
+          <button v-if="!$store.getters.isLoggedIn" class="my-2 btn-success btn-icon w-full" @click="save(false)"> 
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
             </svg>
@@ -261,7 +261,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 #app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

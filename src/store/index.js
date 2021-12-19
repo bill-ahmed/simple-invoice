@@ -26,7 +26,7 @@ export default createStore({
     },
 
     /** Don't actually use this property...only for forcing a refresh */
-    isFileChosen: !!localStorage.getItem('fileChosen'),
+    fileChosen: JSON.parse(localStorage.getItem('fileChosen')),
 
     toast: useToast()
   },
@@ -36,7 +36,7 @@ export default createStore({
     account(state, account) { state.account = account; },
     userInfo(state, u) { state.userInfo = u; },
     modals(state, m) { let mo = state.modals; state.modals = { ...mo, ...m } },
-    isFileChosen(state, f) { state.isFileChosen = f; }
+    fileChosen(state, f) { state.fileChosen = f; }
   },
   getters: {
     /** True iff user logged in with ANY possible provider */
@@ -48,7 +48,7 @@ export default createStore({
   actions: {
     fileOpened({ commit }, file) {
       localStorage.setItem('fileChosen', JSON.stringify(file));
-      commit('isFileChosen', true);
+      commit('fileChosen', file);
     },
 
     /** 

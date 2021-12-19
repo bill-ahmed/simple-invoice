@@ -11,6 +11,9 @@ body {
 .col { @apply flex flex-col }
 .row { @apply flex flex-row }
 
+ol { @apply list-decimal list-inside }
+ul { @apply list-disc list-inside }
+
 /* Typography */
 h2 { @apply text-2xl font-semibold; }
 h3 { @apply text-lg mb-3 }

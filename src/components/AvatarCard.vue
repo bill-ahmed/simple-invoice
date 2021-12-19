@@ -1,7 +1,7 @@
 <template>
   <h4 v-if="loading"> Please wait... </h4>
   <div v-else>
-    <div class="flex flex-col items-center justify-center absolute p-1 w-16 h-16 rounded-full -top-16 left-0 right-0 ml-auto mr-auto" style="background: #FAFAFA">
+    <div class="flex flex-col items-center justify-center absolute p-1 w-16 h-16 rounded-full -top-12 left-0 right-0 ml-auto mr-auto" style="background: #FAFAFA">
       <svg v-if="!$store.getters.isLoggedIn" xmlns="http://www.w3.org/2000/svg" class="p-2 shadow-md rounded-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
       </svg>
@@ -32,12 +32,12 @@
       <!-- Controls for OneDrive -->
       <div v-if="$store.getters.isLoggedInOneDrive" class="my-2 flex flex-col items-center">
 
-        <div v-if="$store.state.isFileChosen" class="mb-8 flex flex-col w-full">
+        <div v-if="!!$store.state.fileChosen" class="mb-8 flex flex-col w-full">
           <!-- Info about the file currently opened -->
           <div class="mb-4 flex flex-col text-gray-400">
             <p> <b>Name:</b> {{ fileMetaData().name }} </p>
             <p> <b>Size:</b> {{ fileMetaData().size }} </p>
-            <p class="italic"> Last updated {{ new Date(fileMetaData().lastModifiedDateTime).toLocaleString() }} </p>
+            <p class="italic"> Last update: {{ new Date(fileMetaData().lastModifiedDateTime).toLocaleString() }} </p>
           </div>
 
           <div class="flex flex-row w-full items-center">
@@ -50,7 +50,7 @@
               <input class="m-0" type="checkbox" :checked="!!autoSyncInterval"/>
             </div>
 
-            <button @click="sync" class="btn-bare btn-outlined text-xs p-1 w-1/2 h-8 ml-4"> Sync Now </button>
+            <button @click="sync(false)" class="btn-bare btn-outlined text-xs p-1 w-1/2 h-8 ml-4"> Sync Now </button>
           </div>
         </div>
 
@@ -109,7 +109,7 @@ export default {
       this.autoSyncInterval = null; 
     },
 
-    fileMetaData() { return JSON.parse(localStorage.getItem('fileChosen')) },
+    fileMetaData() { return this.$store.state.fileChosen },
 
     async loginOneDrive() {
       this.loading = true;
@@ -138,6 +138,6 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
 </style>

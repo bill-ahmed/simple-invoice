@@ -246,7 +246,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 /* 
 * ANY AND ALL STYLES HERE MUST ALSO 
 * BE INCLUDED IN `app.css.json`, otherwise
@@ -257,6 +257,8 @@ export default {
 
 .blue-color { color: #4f697a; border-color: #4f697a; }
 .bg-blue { background: #4f697a; }
+
+/** Everything below here is preview-specific */
 
 #printMe textarea {
   padding: 3px;

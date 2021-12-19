@@ -7,9 +7,6 @@ import Store from './store';
 import './styles/app.css';
 import "vue-toastification/dist/index.css";
 
-// TODO: Remove this!
-console.warn = () => {}
-
 const app = createApp(App);
 
 const toastOptions = {
