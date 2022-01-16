@@ -35,7 +35,6 @@ export default class OneDrive {
    * Setup OneDrive helper instance.
    */
   static setup() {
-    console.log("using msal credentials", msalConfig);
     OneDrive._msal = new msal.PublicClientApplication(msalConfig);
   }
 
