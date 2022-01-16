@@ -9,7 +9,7 @@
       <img v-else-if="$store.getters.isLoggedInOneDrive" :src="$store.state.userInfo.avatar" class="shadow-md rounded-full"/>
     </div>
 
-    <button v-if="!$store.getters.isLoggedIn" class="mt-4 btn-info btn-icon w-full" @click="loginOneDrive">
+    <button v-if="!$store.getters.isLoggedIn" class="mt-6 btn-info btn-icon w-full" @click="loginOneDrive">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
       </svg>
@@ -17,16 +17,16 @@
       <span> Login OneDrive </span>
     </button>
 
-    <button v-if="!$store.getters.isLoggedIn" class="mt-4 btn-info btn-icon w-full" @click="false">
+    <!-- <button v-if="!$store.getters.isLoggedIn" class="mt-4 btn-info btn-icon w-full" @click="false">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
       </svg>
 
       <span> Login Google Drive </span>
-    </button>
+    </button> -->
 
     <div v-if="$store.getters.isLoggedIn" class="my-2 flex flex-col items-center">
-      <h3 class="m-0"> {{ $store.state.userInfo.name }} </h3>
+      <h3 class="m-0 mt-2"> {{ $store.state.userInfo.name }} </h3>
       <h4 class="text-gray-400"> {{ $store.state.userInfo.email }} </h4>
 
       <!-- Controls for OneDrive -->
@@ -36,8 +36,13 @@
           <!-- Info about the file currently opened -->
           <div class="mb-4 flex flex-col text-gray-400">
             <p> <b>Name:</b> {{ fileMetaData().name }} </p>
-            <p> <b>Size:</b> {{ fileMetaData().size }} </p>
-            <p class="italic"> Last update: {{ new Date(fileMetaData().lastModifiedDateTime).toLocaleString() }} </p>
+            <p> <b>Size:</b> {{ fileSize() }} </p>
+            <p 
+              class="italic" 
+              :title="new Date(fileMetaData().lastModifiedDateTime).toLocaleString()"
+            > 
+              Last update: {{ fileDate() }} 
+            </p>
           </div>
 
           <div class="flex flex-row w-full items-center">
@@ -46,7 +51,7 @@
               class="cursor-pointer w-1/2 flex flex-row items-center justify-between ring-2 ring-gray-300 rounded-md p-2 h-8"
               :class="{ 'bg-gray-200': !!autoSyncInterval }"
             >
-              <p class="mr-4"> Auto Sync </p>
+              <p class="mr-2"> Auto Sync </p>
               <input class="m-0" type="checkbox" :checked="!!autoSyncInterval"/>
             </div>
 
@@ -77,6 +82,8 @@
 </template>
 
 <script>
+import { getFileSizeString, niceDate } from '../utils';
+
 export default {
   data() {
     return {
@@ -110,6 +117,8 @@ export default {
     },
 
     fileMetaData() { return this.$store.state.fileChosen },
+    fileSize() { return getFileSizeString(this.fileMetaData().size) },
+    fileDate() { return niceDate(new Date(this.fileMetaData().lastModifiedDateTime)) },
 
     async loginOneDrive() {
       this.loading = true;

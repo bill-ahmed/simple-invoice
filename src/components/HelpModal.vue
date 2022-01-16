@@ -42,6 +42,13 @@ item 8, 15.5, 8.6</pre>
       </code>
 
       <p class="mt-4"> <b>Note:</b> Do not include a header row! </p>
+      <br/>
+
+      <h3> Export PDF </h3>
+      <p>
+        To download a PDF file, click "Download PDF" on the right. A popup will appear asking you
+        where to print, choose "Save as PDF" from the "Destination" drop-down and click "Save".
+      </p>
 
       <!-- Modal actions -->
       <div class="my-4 row justify-end">

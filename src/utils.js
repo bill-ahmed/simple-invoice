@@ -109,3 +109,77 @@ export function downloadFile(filename, text) {
 
   document.body.removeChild(element);
 }
+
+/** Get string representation of a file size.
+ * e.g. 2,560 -> 2.56 KB
+ * e.g. 1,572,864 -> 1.57 MB
+ * 
+ * @param {number} size
+ * @returns {string} A human-readable string.
+ */
+export function getFileSizeString(size) {
+  if(size < 0) return '∞';
+  if(size === undefined || size == null) return 'Unknown';
+
+  const DP = 2;   // Number of fixed decimal places for rounding
+
+  const B = 1;
+  const KB = 1024;
+  const MB = 1048576;
+  const GB = 1073741824;
+  const TB = 1099511627776;
+  const PB = 1125899906842624;
+
+  const B_s = `${(size / B).toFixed(DP)} B`;
+  const KB_s = `${(size / KB).toFixed(DP)} KB`;
+  const MB_s = `${(size / MB).toFixed(DP)} MB`;
+  const GB_s = `${(size / GB).toFixed(DP)} GB`;
+  const TB_s = `${(size / TB).toFixed(DP)} TB`;
+
+  if(size < B){
+    return B_s;
+  }
+  if(size < KB){
+    return B_s;
+  }
+  if(size < MB){
+    return KB_s;
+  }
+  if(size < GB){
+    return MB_s;
+  }
+  if(size < TB){
+    return GB_s;
+  }
+  if(size < PB) {
+    return TB_s;
+  }
+
+  console.error('File size too large to convert:', size);
+  return "ERROR -- Too large";
+}
+
+/**
+ * Human readable date format.
+ * e.g. "Today", "a minute ago", etc.
+ * @param {Date} d 
+ * @returns {string} 
+ */
+export function niceDate(d) {
+  let now = new Date();
+  
+  let sec = 1000;
+  let min = sec * 60;
+  let hour = min * 60;
+  let day = hour * 24;
+
+  let diff = now - d;
+
+  // TODO: Make singular instead of plural when only one of that unit
+  if (diff < sec) return 'a second ago'
+  if (diff < min) return `${Math.floor(diff / sec)} seconds ago`
+  if (diff < hour) return `${Math.floor(diff / min)} minutes ago`
+  if (diff < day) return `${Math.floor(diff / hour)} hours ago`
+
+  return d.toLocaleString();
+}
