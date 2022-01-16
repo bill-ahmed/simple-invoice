@@ -1,13 +1,21 @@
 <template>
-  <div @mouseover="showEdit=true" @mouseleave="showEdit = false" id="printMe" style="width: 8.5in;" :style="showEdit ? 'padding: 2rem;' : ''" class="shadow-xl my-4 mx-auto p-16 bg-white overflow-y-auto">    
+  <div @mouseover="!loading ? showEdit=true : false" @mouseleave="showEdit = false" id="printMe" style="width: 8.5in;" :style="showEdit ? 'padding: 2rem;' : ''" class="relative shadow-xl my-4 mx-auto p-16 bg-white overflow-y-auto">    
+    <!-- Loading message -->
+    <div v-if="loading" class="flex flex-col items-center justify-center pointer-events-none absolute top-0 bottom-0 left-0 right-0" style="background: rgba(0,0,0,0.1)">
+      <!-- <h2 class="italic" style="z-index: 100;"> Getting ready... </h2> -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="animate-spin h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      </svg>
+    </div>
+
     <!-- From address -->
     <div class="flex flex-col mb-10 w-full text-black break-all whitespace-pre-wrap">
-      <textarea v-if="showEdit || data.header.from.name === ''" rows="1" placeholder="Your Name" v-model="data.header.from.name"/>
+      <textarea v-if="showEdit || data.header.from.name === ''" rows="1" placeholder="Your Name (*)" v-model="data.header.from.name"/>
       <p v-else>
         {{ data.header.from.name }}
       </p>
 
-      <textarea v-if="showEdit || data.header.from.address === ''" rows="4" placeholder="Your Address" v-model="data.header.from.address"/>
+      <textarea v-if="showEdit || data.header.from.address === ''" rows="4" placeholder="Your Address (*)" v-model="data.header.from.address"/>
       <p v-else>
         {{ data.header.from.address }}
       </p>
@@ -16,12 +24,12 @@
     <!-- To address + Summary -->
     <div class="text-black flex flex-row justify-between">
       <div class="w-80 break-all whitespace-pre-wrap">
-        <textarea class="w-full" v-if="showEdit || data.header.to.name === ''" rows="1" placeholder="To Name" v-model="data.header.to.name"/>
+        <textarea class="w-full" v-if="showEdit || data.header.to.name === ''" rows="1" placeholder="To Name (*)" v-model="data.header.to.name"/>
         <p v-else>
         {{ data.header.to.name }}
         </p>
 
-        <textarea class="w-full" v-if="showEdit || data.header.to.address === ''" rows="4" placeholder="To Address" v-model="data.header.to.address"/>
+        <textarea class="w-full" v-if="showEdit || data.header.to.address === ''" rows="4" placeholder="To Address (*)" v-model="data.header.to.address"/>
         <p v-else>
           {{ data.header.to.address }}
         </p>
@@ -185,12 +193,11 @@
 import draggable from 'vuedraggable'
 
 export default {
-  props: ['meta', 'data'],
+  props: ['meta', 'data', 'loading'],
   components: {
     draggable
   },
   data() {
-    console.log(this.data.body.items)
     return {
       showEdit: false,   // Whether to show editor view or not,
       drag: false,       // True iff an item is being dragged
@@ -239,7 +246,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 /* 
 * ANY AND ALL STYLES HERE MUST ALSO 
 * BE INCLUDED IN `app.css.json`, otherwise
@@ -250,6 +257,8 @@ export default {
 
 .blue-color { color: #4f697a; border-color: #4f697a; }
 .bg-blue { background: #4f697a; }
+
+/** Everything below here is preview-specific */
 
 #printMe textarea {
   padding: 3px;

@@ -1,6 +1,7 @@
 <template>
   <div class="col h-screen">
     <HelpModalVue v-if="showHelp" v-on:close="showHelp = false"/>
+    <OneDriveFilePickerVue v-if="$store.state.modals.oneDriveFileSelector" v-on:update="parseAndLoadData" />
 
     <div class="row w-screen flex-grow overflow-x-auto">
       <div class="flex flex-col shadow-md m-4 p-6 w-1/5 bg-white rounded-lg overflow-auto">
@@ -19,13 +20,13 @@
         <!-- Meta data controls -->
         <div>
           <div>
-            <label>Invoice #</label>
+            <label>Invoice # (*)</label>
             <input v-model="invoiceMeta.id" placeholder='e.g. 000003' class="w-full"/>
 
-            <label>Date Issued</label>
+            <label>Date Issued (*)</label>
             <input v-model="invoiceMeta.dateIssue" type="date" class="w-full"/>
 
-            <label>Due Date</label>
+            <label>Due Date (*)</label>
             <input v-model="invoiceMeta.dateDue" type="date" class="w-full"/>
 
             <h4 class="mt-4 font-medium"> Override Headers </h4>
@@ -50,54 +51,56 @@
         </div>
       </div>
 
-      <EditorVue class="rounded-md" :meta="invoiceMeta" :data="invoiceData"/>
+      <EditorVue class="rounded-md" :loading="loading" :meta="invoiceMeta" :data="invoiceData"/>
 
+      <!-- Right-side options -->
       <div class="col w-1/5 overflow-auto">
         <!-- Controls -->
-        <div class="m-4 mb-2 p-6 shadow-md bg-white rounded-md">
-          <div>
-            <input type="file" :key="filePickerKey" id="file_picker" class="hidden" accept=".csv"/>
-            <div class="col">
-              <button class="my-2 btn-success btn-icon" @click="save"> 
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-                </svg>
-                
-                <span> Save Progress</span> 
-              </button>
-
-              <button class="my-2 btn-info btn-icon w-full" @click="print">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-
-                <span> Download PDF </span>
-              </button>
-
-              <br/>
-
-              <div class="col my-2">
-                <button class="m-2 btn-warn btn-outlined btn-icon w-full" @click="importData">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
-                  </svg>
-                  <span> Import File </span>
-                </button>
-
-                <button class="m-2 btn-bare btn-outlined btn-icon w-full" @click="exportData">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />                   </svg>
-                  <span> Export Data </span>
-                </button>
-              </div>
-
-              <!-- <button @click="debug">debug</button> -->
+        <div class="m-4 mt-16 mb-2 p-2 shadow-md bg-white rounded-md">
+          <input type="file" :key="filePickerKey" id="file_picker" class="hidden" accept=".csv"/>
+          <div class="col relative">
+            <div v-if="loading">
+              <h3> Please wait... </h3>
             </div>
+
+            <AvatarCardVue v-else v-on:sync="manualSync" />
           </div>
         </div>
 
-        
+        <div class="m-4 mb-2 p-6 shadow-md bg-white rounded-md">
+          <button v-if="!$store.getters.isLoggedIn" class="my-2 btn-success btn-icon w-full" @click="save(false)"> 
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+            </svg>
+            
+            <span> Save Locally</span> 
+          </button>
 
+          <button class="my-2 btn-info btn-icon w-full" @click="print">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+
+            <span> Download PDF </span>
+          </button>
+
+          <br/>
+
+          <div class="col my-2">
+            <button class="m-2 btn-warn btn-outlined btn-icon w-full" @click="importData">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+              </svg>
+              <span> Import File </span>
+            </button>
+
+            <button class="m-2 btn-bare btn-outlined btn-icon w-full" @click="exportData(false)">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />                   </svg>
+              <span> Export Data </span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -107,15 +110,19 @@
 import { useToast } from "vue-toastification";
 import EditorVue from './components/Editor.vue'
 import editorStyles from './styles/app.css.json';
-import { downloadFile, exportInvoiceCSV, parseInvoiceCSV, sanitizeData } from './utils';
-import { INVOICE_METADATA_DEFAULTS, INVOICE_DATA_DEFAULTS } from './constants';
+import { clone, downloadFile, exportInvoiceCSV, parseInvoiceCSV, sanitizeData, validateInvoiceData } from './utils';
+import { INVOICE_METADATA_DEFAULTS, INVOICE_DATA_DEFAULTS, AUTHENTICATION } from './constants';
 import HelpModalVue from './components/HelpModal.vue';
+import AvatarCardVue from './components/AvatarCard.vue';
+import OneDriveFilePickerVue from './components/OneDriveFilePicker.vue';
 
 export default {
   name: 'App',
   components: {
     EditorVue,
-    HelpModalVue
+    HelpModalVue,
+    AvatarCardVue,
+    OneDriveFilePickerVue
   },
   data() {
     let invoiceData = INVOICE_DATA_DEFAULTS;
@@ -128,21 +135,52 @@ export default {
     if(existingMeta) invoiceMeta = { ...invoiceMeta, ...(JSON.parse(existingMeta)) }
 
     return {
+      loading: true,
       showHelp: false,
+      
+      errors: [],
+      
       invoiceMeta,
       invoiceData,
+      
       filePickerKey: 0,  // Hacky way of clearing the input each time it's read
+
       toast: useToast()
     }
   },
+  mounted() {
+    // Don't bother checking every time if user isn't authenticated
+    if(localStorage.getItem('hasPreviousLogin'))
+      this.$store.dispatch('checkAuth').then(() => { this.loading = false; });
+
+    else
+      this.loading = false;
+  },
   methods: {
-    debug() { this.invoiceData.body.items[0].description = 'test' },
-    save() {
+    debug(d) { console.log('debug:', d) },
+    
+    async manualSync(skipNotification) {
+      // Save locally first in case anything else breaks!
+      this.save(true)
+
+      let res = await this.$store.dispatch('fileSync', this.exportData(true));
+
+      // If truthy, then result is newer data from server
+      if(res)
+        this.parseAndLoadData(res)
+
+      if(!skipNotification)
+        this.toast.success('Synced with the cloud!')
+    },
+    
+    save(skipNotification) {
       localStorage.setItem('invoiceDataMeta', JSON.stringify(this.invoiceMeta))
       localStorage.setItem('invoiceData', JSON.stringify(this.invoiceData))
 
-      this.toast.success('Saved locally!')
+      if(!skipNotification)
+        this.toast.success('Saved locally!')
     },
+    
     importData() {
       let elem = document.getElementById('file_picker');
 
@@ -155,11 +193,7 @@ export default {
         this.invoiceMeta.filename = file.name
 
         reader.onload = () => {
-          let parsed = parseInvoiceCSV(reader.result);
-          let invoiceData = this.invoiceData;
-          invoiceData.body.items = parsed;
-
-          this.invoiceData = sanitizeData(invoiceData);
+          this.parseAndLoadData(reader.result);          
 
           // Clear value each time so we get updated file
           this.filePickerKey++;
@@ -172,11 +206,30 @@ export default {
 
       elem.click();
     },
-    exportData() {
-      let data = exportInvoiceCSV(this.invoiceData.body.items);
-      downloadFile(this.invoiceMeta.filename, data);
+    parseAndLoadData(data) {
+      let parsed = parseInvoiceCSV(data);
+      let invoiceData = this.invoiceData;
+      invoiceData.body.items = parsed;
+
+      this.invoiceData = sanitizeData(invoiceData);
     },
+    exportData(skipDownload) {
+      let data = exportInvoiceCSV(this.invoiceData.body.items);
+
+      if(!skipDownload)
+        downloadFile(this.invoiceMeta.filename, data);
+      
+      return data;
+    },
+
     print() {
+      // Make sure everything is there
+      let validationResult = validateInvoiceData(clone(this.invoiceMeta), clone(this.invoiceData))
+      if(validationResult !== true) {
+        alert(`The following missing fields (*) are required:\n\n${validationResult.join(', ')}`)
+        return;
+      }
+
       // Element to print
       let elem = document.getElementById('printMe')
 
@@ -215,7 +268,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 #app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

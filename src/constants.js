@@ -1,3 +1,10 @@
+export const AUTHENTICATION = {
+  azure: {
+    client_id: process.env.VUE_APP_AZURE_CLIENT_ID,
+    scopes: ['profile', 'User.Read', 'Files.Read.All', 'Files.ReadWrite.All']
+  }
+};
+
 export const INVOICE_METADATA_DEFAULTS = {
   id: '',
   currency: 'CAD',
@@ -15,7 +22,7 @@ export const INVOICE_METADATA_DEFAULTS = {
     qty: 'Qty',
     lineTotal: 'Line Total'
   }
-}
+};
 
 export const INVOICE_DATA_DEFAULTS = {
   header: {
@@ -35,4 +42,4 @@ export const INVOICE_DATA_DEFAULTS = {
   footer: {
     notes: ''
   }
-}
+};
